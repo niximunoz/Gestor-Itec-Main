@@ -1,0 +1,5 @@
+export * from './ITblTicket'
+export * from './ITblDetalleTicket'
+export * from './ITblUsuario'
+export * from './ITblCategorias'
+export * from './ITblEstados'
