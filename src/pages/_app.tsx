@@ -58,6 +58,8 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // ** Global css styles
 import '../../styles/globals.css'
 import UserSpinner from 'src/layouts/components/UserSpinner'
+import { ConfirmProvider } from 'material-ui-confirm'
+import { ParamsProvider } from 'src/context/ParamsContext'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -101,7 +103,7 @@ const App = (props: ExtendedAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   // Variables
-  const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
+  const getLayout = Component.getLayout ?? ((page:any) => <UserLayout>{page}</UserLayout>)
 
   const setConfig = Component.setConfig ?? undefined
 
@@ -121,6 +123,7 @@ const App = (props: ExtendedAppProps) => {
         </Head>
 
         <AuthProvider>
+        <ParamsProvider>
           <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
             <SettingsConsumer>
               {({ settings }) => {
@@ -129,7 +132,9 @@ const App = (props: ExtendedAppProps) => {
                     <WindowWrapper>
                       <Guard authGuard={authGuard} guestGuard={guestGuard}>
                         <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}>
-                          {getLayout(<Component {...pageProps} />)}
+                          <ConfirmProvider>
+                            <div>{getLayout(<Component {...pageProps} />)}</div>
+                          </ConfirmProvider>
                         </AclGuard>
                       </Guard>
                     </WindowWrapper>
@@ -141,6 +146,7 @@ const App = (props: ExtendedAppProps) => {
               }}
             </SettingsConsumer>
           </SettingsProvider>
+          </ParamsProvider>
         </AuthProvider>
       </CacheProvider>
     </Provider>

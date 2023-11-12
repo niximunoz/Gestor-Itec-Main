@@ -6,10 +6,10 @@ import { useRouter } from 'next/router'
 
 // ** Hook Imports
 import { useAuth } from 'src/hooks/useAuth'
-import { CircularProgress } from '@mui/material'
 
 //** JWT */
 import jwt from 'jsonwebtoken'
+import UserSpinner from 'src/layouts/components/UserSpinner'
 
 /**
  *  Set Home URL based on User Roles
@@ -42,7 +42,7 @@ const Home = () => {
     
   }, [])
 
-  return <CircularProgress />
+  return <UserSpinner />
 }
 
 export default Home

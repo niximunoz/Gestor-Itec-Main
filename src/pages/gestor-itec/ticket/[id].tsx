@@ -9,6 +9,7 @@ import UserSpinner from 'src/layouts/components/UserSpinner'
 import { encryptText } from '../../../helpers/encryptacion';
 import { ResumenTicket } from 'src/components/gestor-itec/recepcion-tickets'
 import { ITblCategorias, ITblDetalleTicket, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
+import { useParams } from 'src/hooks/useParams'
 
 const Index = () => {
   const [cargando, setCargando] = useState<boolean>(true)
@@ -18,6 +19,7 @@ const Index = () => {
   const [dataCategorias, setDataCategorias] = useState<ITblCategorias[]>([])
   const [dataEstados, setDataEstados] = useState<ITblEstados[]>([])
   const router = useRouter()
+  const paramsUse = useParams()
 
   const cargarDatos = async (id : string) => {
     setCargando(true)
@@ -25,9 +27,7 @@ const Index = () => {
       const consultasApi = [
         { name: 'Ticket Solicitado', promise: instanceMiddlewareApi.post('/Parametros/ObtenerTicketById',{IdConsulta: encryptText(id)}) },
         { name: 'Detalles Ticket Solicitado', promise: instanceMiddlewareApi.post('/Parametros/ObtenerListadoTicketDetallesById',{IdConsulta: encryptText(id)}) },
-        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') },
-        { name: 'Lista de Categorias', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoCategoriasTickets') },
-        { name: 'Lista de Estados', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoEstadosTickets') }
+        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') }
       ]
 
       const results = await Promise.allSettled(consultasApi.map(req => req.promise))
@@ -41,14 +41,12 @@ const Index = () => {
       const TicketCaso = results[0].status === 'fulfilled' ? results[0].value?.data : null
       const DetallesTicketCaso = results[1].status === 'fulfilled' ? results[1].value?.data : []
       const ListaUsuarios = results[2].status === 'fulfilled' ? results[2].value?.data : []
-      const ListaCategorias = results[3].status === 'fulfilled' ? results[3].value?.data : []
-      const ListaEstados = results[4].status === 'fulfilled' ? results[4].value?.data : []
 
       setDataTicket(TicketCaso.Data)
       setDataDetallesTicket(DetallesTicketCaso.Data)
       setDataUsuarios(ListaUsuarios.Data)
-      setDataCategorias(ListaCategorias.Data)
-      setDataEstados(ListaEstados.Data)
+      setDataCategorias(paramsUse.listadoCategorias ?? [])
+      setDataEstados(paramsUse.listadoEstados ?? [])
     } catch (error) {
       console.error('Descripción error:', error)
       setCargando(false)
@@ -60,11 +58,15 @@ const Index = () => {
   }
 
   useEffect(() => {
-    const id = decryptText(router.query.id)
-    if(id != null){
-        cargarDatos(id)
+    const inicializar = async () => {
+      const id = decryptText(router.query.id)
+      if(id != null){
+          await cargarDatos(id)
+      }
     }
-}, [router.query.id])
+    
+    inicializar()
+  }, [router.query.id])
 
   return (
     <>

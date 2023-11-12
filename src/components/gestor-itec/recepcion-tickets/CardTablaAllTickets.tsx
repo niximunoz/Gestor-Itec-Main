@@ -203,10 +203,10 @@ export const CardTablaAllTickets = ({
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuRut = params.value))
+        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuRut == params.value))
 
         return (
-          <Tooltip title={usuarioCrea ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : ''} arrow>
+          <Tooltip title={usuarioCrea ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : '-'} arrow>
             <Box
               component='span'
               sx={{
