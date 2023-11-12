@@ -1,0 +1,480 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ItecGroup.Api</name>
+    </assembly>
+    <members>
+        <member name="T:ItecGroup.Api.RouteConfig">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.RouteConfig.RegisterRoutes(System.Web.Routing.RouteCollection)">
+            <summary>
+            
+            </summary>
+            <param name="routes"></param>
+        </member>
+        <member name="T:ItecGroup.Api.SwaggerConfig">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.SwaggerConfig.Register">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ItecGroup.Api.UnityConfig">
+            <summary>
+            Specifies the Unity configuration for the main container.
+            </summary>
+        </member>
+        <member name="P:ItecGroup.Api.UnityConfig.Container">
+            <summary>
+            Configured Unity Container.
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.UnityConfig.RegisterTypes(Unity.IUnityContainer)">
+            <summary>
+            Registers the type mappings with the Unity container.
+            </summary>
+            <param name="container">The unity container to configure.</param>
+            <remarks>
+            There is no need to register concrete types such as controllers or
+            API controllers (unless you want to change the defaults), as Unity
+            allows resolving a concrete type even if it was not previously
+            registered.
+            </remarks>
+        </member>
+        <member name="T:ItecGroup.Api.UnityWebApiActivator">
+            <summary>
+            Provides the bootstrapping for integrating Unity with WebApi when it is hosted in ASP.NET.
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.UnityWebApiActivator.Start">
+            <summary>
+            Integrates Unity when the application starts.
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.UnityWebApiActivator.Shutdown">
+            <summary>
+            Disposes the Unity container when the application is shut down.
+            </summary>
+        </member>
+        <member name="T:ItecGroup.Api.WebApiConfig">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.WebApiConfig.Register(System.Web.Http.HttpConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="T:ItecGroup.Api.Controllers.BaseApiController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.ErrorGeneral(System.String)">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.SinInfomacion(System.String)">
+            <summary>
+            Retorno 404 con RespuestaGeneralReadDTO generico
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.WrongRequest(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="apiReference"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.TraceDebug(System.String)">
+            <summary>
+            Escribe log de tipo debug en archivo
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.TraceError(System.String,System.Exception)">
+            <summary>
+            Escribe log de tipo error en archivo
+            </summary>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.TraceInfo(System.String)">
+            <summary>
+            Escribe log de tipo informacion en archivo
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.Flush">
+            <summary>
+            Libera
+            </summary>        
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.BaseApiController.Finalize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ItecGroup.Api.Controllers.AccesoController">
+            <summary>
+            
+            </summary>    
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.AccesoController.#ctor(ItecGroup.Applications.Contracts.Api.IGestionApiApplication,ItecGroup.Applications.Contracts.AccesoSistema.IAccesoSistemaApplication)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+            <param name="accesoSistemaApplication"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.AccesoController.GetToken(ItecGroup.Domain.Entities.Api.ApiToken)">
+            <summary>
+             Obtener token de servicio
+            </summary>
+            <param name="apiToken"></param>        
+            <remarks>Servicio que permite generar un Token. Se recibe un userName y keyAccess para solicitar un nuevo Token</remarks>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.AccesoController.GetAccess(ItecGroup.Applications.DTO.Api.LoginReadDto)">
+            <summary>
+            Acceso Plataforma
+            </summary>        
+            <param name="loginReadDto"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ItecGroup.Api.Controllers.ParametrosController">
+            <summary>
+            Obtener parametros requeridos
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.#ctor(ItecGroup.Applications.Contracts.IParametrosApplication)">
+            <summary>
+            Api para obtener parametros
+            </summary>
+            <param name="parametrosApplication"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllTickets">
+            <summary>
+            Obtener listado de tickets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllCategoriasTickets">
+            <summary>
+            obtienes el listado de las categorias para tickets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllDetallesTickets">
+            <summary>
+            obtener listado de los detalles de tickets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllDetallesDocumentos">
+            <summary>
+            obtener listado de documentos almacenados
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllEstadosTickets">
+            <summary>
+            Permite obtener el listado de Estados para los Tickets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetTicketById(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Obtener el ticket especifico by ID
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllTicketsByIdUserCrea(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Obtener Listado de Tickets del Usuario que los Creo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllTicketDetallesById(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Obtener Listado de Bitacoras del ticket por Id Ticket Padre
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllTicketsByIdCategoria(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Obtener el listado de tickets correspondientes al Id de Categoria/Area
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllTicketsByIdEstado(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Obtener el Listado de Tickets segun ID de Estado
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetAllTicketsByIdUsuAsignado(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Obtener Listado de Tickets por Usuario Asignado
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.SaveTicket(ItecGroup.Applications.DTO.Parametros.WriteTicketDto)">
+            <summary>
+            Agregar un nuevo Ticket
+            </summary>
+            <param name="ticket"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.UpdateTicket(ItecGroup.Applications.DTO.Parametros.WriteTicketDto)">
+            <summary>
+            Permite actualizar un ticket
+            </summary>
+            <param name="ticket"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.SaveDetalleTicket(ItecGroup.Applications.DTO.Parametros.WriteDetalleTicketDto)">
+            <summary>
+            Agregar Detalle al Ticket Padre
+            </summary>
+            <param name="ticket"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetCountTicketsEstadosUser(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Obtienes la Cantidad y Listados Filtrado de los Tickets Asignados por Estado
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ItecGroup.Api.Controllers.UsuariosController">
+            <summary>
+            Clase de implementacion de Interfaz IUsuariosApplication
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.#ctor(ItecGroup.Applications.Contracts.IUsuariosApplication)">
+            <summary>
+            Api para administracion de usuarios del sistema
+            </summary>
+            <param name="usuariosApplication"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.GetAllUsuarios">
+            <summary>
+             Obtener usuarios del sistema
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.PostAgregarUsuarios(ItecGroup.Applications.DTO.CreateUsuarioDTO)">
+            <summary>
+            Agregar un nuevo usuario
+            </summary>
+            <param name="nuevoUsuario"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.PostActualizarUsuarios(ItecGroup.Applications.DTO.UpdateUsuarioDTO)">
+            <summary>
+            Actualizar un usuario
+            </summary>
+            <param name="nuevoUsuario"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ItecGroup.Api.Core.WebApiApplication">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Core.WebApiApplication.Application_Start">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ItecGroup.Api.Helpers.Logger">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.Logger.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.Logger.OnActionExecuting(System.Web.Http.Controllers.HttpActionContext)">
+            <summary>
+            Se produce antes de invocar al método de acción.
+            </summary>
+            <param name="actionContext"></param>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.Logger.OnActionExecuted(System.Web.Http.Filters.HttpActionExecutedContext)">
+            <summary>
+             Se produce después de invocar al método de acción.
+            </summary>
+            <param name="actionExecutedContext"></param>
+        </member>
+        <member name="T:ItecGroup.Api.Helpers.SolutoHelper">
+            <summary>
+            Helpers generales para Soluto
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.Helpers.SolutoHelper.random">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.SolutoHelper.GetAssemblyFileVersion">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.SolutoHelper.RandomString(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.SolutoHelper.GetAssemblyNameVersion">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ItecGroup.Api.Helpers.ValidateSolutoKeyRequestAttribute">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.ValidateSolutoKeyRequestAttribute.#ctor(System.String)">
+            <summary>
+            Permite validar servicios enlazados a procedimientos de almacenado configurados bajo el appSettings del web.config
+            </summary>
+            <param name="implementation">Nombre de la key configurada en appSettings</param>
+        </member>
+        <member name="M:ItecGroup.Api.Helpers.ValidateSolutoKeyRequestAttribute.OnActionExecuting(System.Web.Http.Controllers.HttpActionContext)">
+            <summary>
+            
+            </summary>
+            <param name="actionContext"></param>
+        </member>
+        <member name="T:ItecGroup.Api.SwaggerExtensions.MarkSecuredMethodsOperationFilter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.SwaggerExtensions.MarkSecuredMethodsOperationFilter.Apply(Swashbuckle.Swagger.Operation,Swashbuckle.Swagger.SchemaRegistry,System.Web.Http.Description.ApiDescription)">
+            <summary>
+            
+            </summary>
+            <param name="operation"></param>
+            <param name="schemaRegistry"></param>
+            <param name="apiDescription"></param>
+        </member>
+        <member name="T:ItecGroup.Api.SwaggerExtensions.SwaggerImplementationNotesAttribute">
+            <summary>
+            Para eliminar remarks o lineas de comentario para implementaciones
+            </summary>
+        </member>
+        <member name="P:ItecGroup.Api.SwaggerExtensions.SwaggerImplementationNotesAttribute.ImplementationNotes">
+            <summary>
+            Cadena de texto con las implementaciones
+            </summary>
+        </member>
+        <member name="P:ItecGroup.Api.SwaggerExtensions.SwaggerImplementationNotesAttribute.SummaryNotes">
+            <summary>
+            Titulo
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.SwaggerExtensions.SwaggerImplementationNotesAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Se recibe el mismo string de el antiguo tag de remarks
+            </summary>
+            <param name="summary">Titulo</param>
+            <param name="implementationNotes">Descripcion</param>
+        </member>
+        <member name="T:ItecGroup.Api.SwaggerExtensions.ApplySwaggerImplementationNotesFilterAttributes">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ItecGroup.Api.SwaggerExtensions.ApplySwaggerImplementationNotesFilterAttributes.Apply(Swashbuckle.Swagger.Operation,Swashbuckle.Swagger.SchemaRegistry,System.Web.Http.Description.ApiDescription)">
+            <summary>
+            
+            </summary>
+            <param name="operation"></param>
+            <param name="schemaRegistry"></param>
+            <param name="apiDescription"></param>
+        </member>
+        <member name="T:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation">
+            <summary>
+            Textos referentes a la documentacion a mostrar con SwaggerResponse-
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.NotFound">
+            <summary>
+            No encontrado.
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.BadRequest">
+            <summary>
+            Existe un error con los datos enviados.
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.InternalServerError">
+            <summary>
+            Oops! Algo ocurrió.
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.Forbidden">
+            <summary>
+            Sin permisos para ejecutar el servicio.
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.Unauthorized">
+            <summary>
+            Se ha denegado la autorización para esta solicitud.
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.RespuestaGeneralResponse">
+            <summary>
+            Como respuesta obtenemos el código y glosa de la acción realizada.
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.TokenResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ItecGroup.Api.SwaggerExtensions.Documentation.ApiSwaggerDocumentation.JsonReadDtoResponse">
+            <summary>
+            Respuesta General para JsonDto Dynamic
+            </summary>
+        </member>
+    </members>
+</doc>
