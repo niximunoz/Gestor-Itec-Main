@@ -1,8 +1,9 @@
 export interface ITblDetalleTicket {
     DetalleTicketId : number
     TicketId : number
-    UserCreaId : number
+    UserCreaRut : number
     DetalleTicketDescripcion : string
+    DetalleTicketDocumento: string
     FechaCreacion : Date
     Activo : boolean
 }
