@@ -107,8 +107,8 @@ export const ModalAgregarTicket = ({
 
           if(dataTicket.Data != null){
             await Swal.fire({
-              title: 'Exito',
-              text: 'Se Creo exitosamente el Ticket',
+              title: 'Éxito',
+              text: 'El Ticket se ingresó exitosamente.',
               icon: 'success',
               confirmButtonColor: '#0098aa',
               confirmButtonText: 'Aceptar'
@@ -122,7 +122,7 @@ export const ModalAgregarTicket = ({
       }else{
         Swal.fire({
           title: 'Ocurrio un error',
-          text: 'No se pudo crear el Ticket',
+          text: 'No se pudo crear el Ticket.',
           icon: 'error',
           confirmButtonColor: '#0098aa',
           confirmButtonText: 'Aceptar'
@@ -158,7 +158,6 @@ export const ModalAgregarTicket = ({
 
   return (
     <>
-        <Tooltip title={'Agregar Ticket'} arrow>
           <Button
             sx={{ mr: 2, mb: 2 }}
             variant='outlined'
@@ -167,9 +166,8 @@ export const ModalAgregarTicket = ({
             onClick={() => abrirModal()}
             className='classBtnAgregarTicket'
           >
-            Agregar Ticket
+            Ingresar Ticket
           </Button>
-        </Tooltip>
 
       <Dialog
         fullWidth
@@ -186,13 +184,11 @@ export const ModalAgregarTicket = ({
               <Close />
             </IconButton>
 
-              <Tooltip title={'Nuevo Ticket'} arrow>
                 <Box sx={{ mb: 8, textAlign: 'center' }}>
                   <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
-                    Nuevo Ticket
+                    Ingresar Ticket
                   </Typography>
                 </Box>
-              </Tooltip>
 
             {cargando ? (
               <UserSpinner />
@@ -206,11 +202,11 @@ export const ModalAgregarTicket = ({
                     render={({ field: { value, onChange } }) => (
                       <TextField
                         fullWidth
-                        label='Titulo del Ticket'
+                        label='Título del Ticket'
                         onChange={onChange}
                         value={value}
                         error={Boolean(errorsTicket.Titulo)}
-                        placeholder='Nombre Servicio'
+                        placeholder='Título del Ticket'
                         id='filled-multiline-flexible'
                         multiline
                       />
@@ -241,7 +237,7 @@ export const ModalAgregarTicket = ({
                             {...params}
                             error={Boolean(errorsTicket.Categoria)}
                             fullWidth
-                            label='Seleciona la Categoria'
+                            label='Seleccionar Categoría...'
                             variant='outlined'
                           />
                         )}
@@ -280,7 +276,7 @@ export const ModalAgregarTicket = ({
                               {...params}
                               error={Boolean(errorsTicket.IdEstado)}
                               fullWidth
-                              label='Seleciona el Estado'
+                              label='Seleccionar Estado...'
                               variant='outlined'
                             />
                           )}
@@ -319,7 +315,7 @@ export const ModalAgregarTicket = ({
                             {...params}
                             error={Boolean(errorsTicket.IdUserAsignado)}
                             fullWidth
-                            label='Seleciona Al Usuario Responsable'
+                            label='Seleccionar Responsable...'
                             variant='outlined'
                           />
                         )}
@@ -352,7 +348,7 @@ export const ModalAgregarTicket = ({
                           onChange={onChange}
                           value={value}
                           error={Boolean(errorsTicket.Descripción)}
-                          placeholder='Nombre Servicio'
+                          placeholder='Descripción'
                           id='textarea-outlined-static'
                         />
                       )}
@@ -365,16 +361,12 @@ export const ModalAgregarTicket = ({
             )}
           </DialogContent>
           <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
-            <Tooltip title={'Guardar'} arrow>
               <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
-                <Save sx={{ mr: 1 }} /> Guardar
+                <Save sx={{ mr: 1 }} /> Ingresar
               </Button>
-            </Tooltip>
-            <Tooltip title={'Cancelar'} arrow>
               <Button variant='outlined' color='secondary' onClick={cerrarModal}>
                 Cancelar
               </Button>
-            </Tooltip>
           </DialogActions>
         </form>
       </Dialog>

@@ -63,7 +63,7 @@ const Index = () => {
       ) : (
         <TabContext value={tab}>
         <TabList variant='fullWidth' onChange={handleChangeTab} aria-label='full width tabs example'>
-          <Tab value='1' label='Categorias Tickets'/>
+          <Tab value='1' label='Categorías Tickets'/>
           <Tab value='2' label='Estados Tickets'/>
         </TabList>
           <TabPanel value='1'>

@@ -4,7 +4,10 @@ import {
 
   FileDocumentMultiple,
   AccountGroupOutline
-} from 'mdi-material-ui'
+} from 'mdi-material-ui';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 
 const navigation = (): VerticalNavItemsType => {
@@ -19,64 +22,60 @@ const navigation = (): VerticalNavItemsType => {
     {
       action: 'read',
       subject: 'ADM',
-      title: 'Gestor Itec',
-      icon: FileDocumentMultiple,
+      title: 'Tickets',
+      icon: AssignmentIcon,
       children: [
         {
           action: 'read',
           subject: 'ADM',
-          path: '/gestor-itec/analiticas',
-          title: 'Analiticas Itec'
+          title: 'Ver Todos',
+          path: '/gestor-itec/resumen-tickets/all-tickets'
         },
         {
           action: 'read',
           subject: 'ADM',
-          title: 'Atención de Tickets',
-          children: [
-            {
-              action: 'read',
-              subject: 'ADM',
-              title: 'Ver Todos',
-              path: '/gestor-itec/resumen-tickets/all-tickets'
-            },
-            {
-              action: 'read',
-              subject: 'ADM',
-              title: 'Ver Asignados',
-              path: '/gestor-itec/resumen-tickets/tickets-asignados'
-            },
-            {
-              action: 'read',
-              subject: 'ADM',
-              title: 'Ver Areas',
-              path: '/gestor-itec/resumen-tickets/tickets-areas'
-            }
-          ]
+          title: 'Asignados',
+          path: '/gestor-itec/resumen-tickets/tickets-asignados'
         },
         {
-          title: 'Reportes',
-          children: [
-            {
-              title: 'Tickets',
-              action: 'read',
-              subject: 'ADM',
-              path: '/gestor-itec/reportes'
-            }
-          ]
-        },
-        {
-          title: 'Mantenedores',
-          children: [
-            {
-              action: 'read',
-              subject: 'ADM',
-              title: 'Tablas Basicas',
-              icon: AccountGroupOutline,
-              path: '/gestor-itec/mantenedores'
-            }
-          ]
+          action: 'read',
+          subject: 'ADM',
+          title: 'Área Tickets',
+          path: '/gestor-itec/resumen-tickets/tickets-areas'
         }
       ]
+    },
+    {
+      title: 'Reportes',
+      icon: TimelineIcon,
+      children: [
+        {
+          title: 'Tickets',
+          action: 'read',
+          subject: 'ADM',
+          path: '/gestor-itec/reportes'
+        }
+      ]
+    },
+    {
+      title: 'Mantenedores',
+      icon: HomeOutline,
+      children: [
+        {
+          action: 'read',
+          subject: 'ADM',
+          title: 'Tablas Basicas',
+          icon: AccountGroupOutline,
+          path: '/gestor-itec/mantenedores'
+        }
+      ]
+    },
+    {
+      action: 'read',
+      subject: 'ADM',
+      icon: QueryStatsIcon,
+      path: '/gestor-itec/analiticas',
+      title: 'Estadísticas'
     }
   ]
 }

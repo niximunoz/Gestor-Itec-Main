@@ -14,7 +14,7 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
-      headerName: '#',
+      headerName: 'N°',
       headerAlign: 'center',
       align: 'center',
       flex: 0.5,
@@ -38,11 +38,11 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
     },
     {
       field: 'EstadoNombre',
-      headerName: 'Nombre Estado',
+      headerName: 'Estado',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
-      minWidth: 400,
+      minWidth: 200,
       renderCell: params => (
         <Tooltip title={params.value ? params.value.toString() : ''} arrow>
           <Box
@@ -62,9 +62,9 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
     },
     {
       field: 'EstadoDescripcion',
-      headerName: 'Descripción Estado',
+      headerName: 'Descripción',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 400,
       renderCell: params => (
@@ -157,7 +157,7 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
     <Card sx={{ mb: 5, position: 'relative' }}>
       <CardHeader
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-        title={`Historial de Tickets`}
+        title={`Listado Estados`}
       />
       <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
       {cargando ? (

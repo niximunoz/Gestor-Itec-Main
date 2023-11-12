@@ -119,7 +119,6 @@ export const ModalAgregarDetalleTicket = ({
 
   return (
     <>
-        <Tooltip title={'Agregar Comentario'} arrow>
           <Button
             sx={{ mr: 2, mb: 2 }}
             variant='outlined'
@@ -128,9 +127,8 @@ export const ModalAgregarDetalleTicket = ({
             onClick={() => abrirModal()}
             className='classBtnAgregarDetalleTicket'
           >
-            Agregar Comentario
+            Ingresar Comentario
           </Button>
-        </Tooltip>
 
       <Dialog
         fullWidth
@@ -147,13 +145,11 @@ export const ModalAgregarDetalleTicket = ({
               <Close />
             </IconButton>
 
-              <Tooltip title={'Nuevo Comentario'} arrow>
                 <Box sx={{ mb: 8, textAlign: 'center' }}>
                   <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
-                    Nuevo Comentario
+                  Ingresar Comentario
                   </Typography>
                 </Box>
-              </Tooltip>
 
             {cargando ? (
               <UserSpinner />
@@ -186,16 +182,12 @@ export const ModalAgregarDetalleTicket = ({
             )}
           </DialogContent>
           <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
-            <Tooltip title={'Guardar'} arrow>
               <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
-                <Save sx={{ mr: 1 }} /> Guardar
+                <Save sx={{ mr: 1 }} /> Ingresar
               </Button>
-            </Tooltip>
-            <Tooltip title={'Cancelar'} arrow>
               <Button variant='outlined' color='secondary' onClick={cerrarModal}>
                 Cancelar
               </Button>
-            </Tooltip>
           </DialogActions>
         </form>
       </Dialog>

@@ -71,6 +71,7 @@ export const ResumenTicket = ({
     try {
       setCargando(true)
       if (ticket != null) {
+      if (ticket != null) {
         const { id: idUser } = JSON.parse(window.localStorage.getItem('userData')!)
 
         const newTicket = {
@@ -81,8 +82,15 @@ export const ResumenTicket = ({
           TickDescripcion: data.Descripción,
           EstadoId: estadoTicket?.EstadoId,
           FechaCreacion: ticket.FechaCreacion,
+          UserCreaId: idUser,
+          CategoriaId: categoriaTicket?.CatId,
+          TickTitulo: data.Titulo,
+          TickDescripcion: data.Descripción,
+          EstadoId: estadoTicket?.EstadoId,
+          FechaCreacion: ticket.FechaCreacion,
           UserAsignadoId: userAsignadoTicket?.UsuId,
           FechaAsignacion: new Date(),
+          Activo: ticket.Activo
           Activo: ticket.Activo
         }
 
@@ -90,17 +98,18 @@ export const ResumenTicket = ({
 
         if (dataTicket.Data != null) {
           Swal.fire({
-            title: 'Exito',
-            text: 'Se Creo exitosamente el Comentario',
+            title: 'Éxito',
+            text: 'Se agregó el comentario exitosamente.',
             icon: 'success',
             confirmButtonColor: '#0098aa',
             confirmButtonText: 'Aceptar'
           })
         }
+
       } else {
         Swal.fire({
           title: 'Ocurrio un error',
-          text: 'No se pudo crear el Ticket',
+          text: 'No se pudo agregar el comentario.',
           icon: 'error',
           confirmButtonColor: '#0098aa',
           confirmButtonText: 'Aceptar'
@@ -184,12 +193,12 @@ export const ResumenTicket = ({
       <Card sx={{ mb: 5, position: 'relative' }}>
         <CardHeader
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-          title={`Resumen Ticket ${ticket?.TickId}`}
-          action={<ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} />}
+          title={`Detalle Ticket N° ${ticket?.TickId}`}
+
         />
         <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
           <form onSubmit={handleSubmit(guardarDatos, onErrors)}>
-            <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 15 }, pt: { xs: 8, sm: 12.5 }, position: 'relative' }}>
+            <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 5 }, pt: { xs: 8, sm: 1.5 }, position: 'relative' }}>
               {cargando ? (
                 <UserSpinner />
               ) : (
@@ -202,13 +211,15 @@ export const ResumenTicket = ({
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           fullWidth
-                          label='Titulo del Ticket'
+                          label='Título'
                           onChange={onChange}
                           value={value}
                           error={Boolean(errorsTicket.Titulo)}
-                          placeholder='Nombre Servicio'
                           id='filled-multiline-flexible'
                           multiline
+                          // InputProps={{
+                          //   readOnly: true,
+                          // }}
                         />
                       )}
                     />
@@ -237,7 +248,7 @@ export const ResumenTicket = ({
                               {...params}
                               error={Boolean(errorsTicket.CategoriaTicket)}
                               fullWidth
-                              label='Seleciona la Categoria'
+                              label='Categoría'
                               variant='outlined'
                             />
                           )}
@@ -278,7 +289,7 @@ export const ResumenTicket = ({
                               {...params}
                               error={Boolean(errorsTicket.EstadoTicket)}
                               fullWidth
-                              label='Seleciona el Estado'
+                              label='Estado'
                               variant='outlined'
                             />
                           )}
@@ -317,7 +328,7 @@ export const ResumenTicket = ({
                               {...params}
                               error={Boolean(errorsTicket.UserAsignado)}
                               fullWidth
-                              label='Seleciona Al Usuario Responsable'
+                              label='Responsable'
                               variant='outlined'
                             />
                           )}
@@ -350,7 +361,6 @@ export const ResumenTicket = ({
                           onChange={onChange}
                           value={value}
                           error={Boolean(errorsTicket.Descripción)}
-                          placeholder='Nombre Servicio'
                           id='textarea-outlined-static'
                         />
                       )}
@@ -366,12 +376,14 @@ export const ResumenTicket = ({
                 </Grid>
               )}
             </DialogContent>
-            <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'right' }}>
-              <Tooltip title={'Guardar'} arrow>
-                <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
-                  <Save sx={{ mr: 1 }} /> Guardar
-                </Button>
-              </Tooltip>
+            <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
+                <ModalAgregarDetalleTicket
+                  idTicketAbierto={ticket?.TickId ?? null}
+                />
+              
+              <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
+                <Save sx={{ mr: 1 }} /> Guardar
+              </Button>
             </DialogActions>
           </form>
         </CardContent>
