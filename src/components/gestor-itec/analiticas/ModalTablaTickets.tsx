@@ -31,7 +31,7 @@ export const ModalTablaTickets = ({
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
-      headerName: 'N° Ticket',
+      headerName: 'N°',
       headerAlign: 'center',
       align: 'center',
       flex: 0.5,
@@ -55,9 +55,9 @@ export const ModalTablaTickets = ({
     },
     {
       field: 'UserCreaId',
-      headerName: 'Usuario Creador',
+      headerName: 'Nombre',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
@@ -84,9 +84,9 @@ export const ModalTablaTickets = ({
     },
     {
       field: 'CategoriaId',
-      headerName: 'Categoria Ticket',
+      headerName: 'Área',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
@@ -113,9 +113,9 @@ export const ModalTablaTickets = ({
     },
     {
       field: 'TickTitulo',
-      headerName: 'Titulo',
+      headerName: 'Título',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 200,
       renderCell: params => (
@@ -137,9 +137,9 @@ export const ModalTablaTickets = ({
     },
     {
       field: 'TickDescripcion',
-      headerName: 'Descripcion',
+      headerName: 'Descripción',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 200,
       renderCell: params => (
@@ -163,12 +163,12 @@ export const ModalTablaTickets = ({
       field: 'EstadoId',
       headerName: 'Estado',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
         const { row } = params
-        const estado = listadoEstados.find(x => (x.EstadoId = row.EstadoId))
+        const estado = listadoEstados.find(x => (x.EstadoId == row.EstadoId))
 
         return (
           <Tooltip title={estado ? estado?.EstadoNombre : ''} arrow>
@@ -182,7 +182,19 @@ export const ModalTablaTickets = ({
                 display: 'inline-block'
               }}
             >
-              {params.value ? estado?.EstadoNombre : '-'}
+              <CustomChip
+                label={params.value ? estado?.EstadoNombre : '-'}
+                skin='light'
+                color={
+                  estado?.EstadoNombre === 'En Proceso'
+                    ? 'info'
+                    : estado?.EstadoNombre === 'Abierto'
+                      ? 'success'
+                      : estado?.EstadoNombre === 'Cerrado'
+                        ? 'error'
+                        : 'warning'
+                }
+              />
             </Box>
           </Tooltip>
         )
@@ -190,9 +202,9 @@ export const ModalTablaTickets = ({
     },
     {
       field: 'UserAsignadoId',
-      headerName: 'Soporte Asignado',
+      headerName: 'Responsable',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
@@ -219,7 +231,7 @@ export const ModalTablaTickets = ({
     },
     {
       field: 'FechaAsignacion',
-      headerName: 'Fecha Asignación',
+      headerName: 'Fecha',
       headerAlign: 'center',
       align: 'center',
       flex: 1,
@@ -242,30 +254,6 @@ export const ModalTablaTickets = ({
       )
     },
     {
-      field: 'Activo',
-      headerName: 'Soporte Asignado',
-      headerAlign: 'center',
-      align: 'center',
-      flex: 1,
-      minWidth: 100,
-      renderCell: params => (
-        <Tooltip title={params.value ? 'Sí' : 'No'} arrow>
-          <Box
-            component='span'
-            sx={{
-              maxWidth: '100%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: 'inline-block'
-            }}
-          >
-            <CustomChip label={params.value ? 'Sí' : 'No'} skin='light' color={params.value ? 'success' : 'error'} />
-          </Box>
-        </Tooltip>
-      )
-    },
-    {
       field: 'Acciones',
       headerName: 'Acciones',
       flex: 1,
@@ -282,7 +270,7 @@ export const ModalTablaTickets = ({
             <Link href={`/gestor-itec/ticket/${encryptText(`${row.TickId}`)}`} passHref>
               <a target='_blank' style={{ textDecoration: 'none' }}>
                 <Tooltip title={`Ir al Ticket`} arrow>
-                  <Button sx={{ mt: 2, mb: 2 }} variant='text' color='warning'>
+                  <Button sx={{ mt: 2, mb: 2 }} variant='text' color='success'>
                     <OpenInBrowserIcon />
                   </Button>
                 </Tooltip>
@@ -368,7 +356,7 @@ export const ModalTablaTickets = ({
         </Button>
       </Tooltip>
 
-    <Dialog
+      <Dialog
         fullWidth
         open={abrir}
         maxWidth='lg'
@@ -376,46 +364,46 @@ export const ModalTablaTickets = ({
         onClose={cerrarModal}
         TransitionComponent={Transition}
         onBackdropClick={cerrarModal}
-      > 
-      
-      <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 15 }, pt: { xs: 8, sm: 12.5 }, position: 'relative' }}>
-      <IconButton size='small' onClick={cerrarModal} sx={{ position: 'absolute', right: '1rem', top: '1rem' }}>
-              <Close />
-        </IconButton>
-        {cargando ? (
-          <UserSpinner />
-        ) : (
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <DataGridPremium
-                sx={{ height: '550px' }}
-                rows={listDatos.map((item, index) => ({
-                  ...item,
-                  CorrelativeId: index + 1
-                }))}
-                columns={columns}
-                pageSize={row}
-                onPageSizeChange={newPageSize => setRow(newPageSize)}
-                rowsPerPageOptions={[5, 10, 20, 50]}
-                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                pagination
-                getRowId={row => row.TickId}
-                components={{ Toolbar: ToolBarBasePremium }}
-                componentsProps={{
-                  toolbar: {
-                    value: buscar,
-                    onChange: (event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value),
-                    clearSearch: () => requestSearch(''),
-                    disableExport: false
-                  }
-                }}
-                initialState={{ pinnedColumns: { right: ['Acciones'] } }}
-              />
+      >
+
+        <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 15 }, pt: { xs: 8, sm: 12.5 }, position: 'relative' }}>
+          <IconButton size='small' onClick={cerrarModal} sx={{ position: 'absolute', right: '1rem', top: '1rem' }}>
+            <Close />
+          </IconButton>
+          {cargando ? (
+            <UserSpinner />
+          ) : (
+            <Grid container spacing={5}>
+              <Grid item xs={12}>
+                <DataGridPremium
+                  sx={{ height: '550px' }}
+                  rows={listDatos.map((item, index) => ({
+                    ...item,
+                    CorrelativeId: index + 1
+                  }))}
+                  columns={columns}
+                  pageSize={row}
+                  onPageSizeChange={newPageSize => setRow(newPageSize)}
+                  rowsPerPageOptions={[5, 10, 20, 50]}
+                  localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                  pagination
+                  getRowId={row => row.TickId}
+                  components={{ Toolbar: ToolBarBasePremium }}
+                  componentsProps={{
+                    toolbar: {
+                      value: buscar,
+                      onChange: (event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value),
+                      clearSearch: () => requestSearch(''),
+                      disableExport: false
+                    }
+                  }}
+                  initialState={{ pinnedColumns: { right: ['Acciones'] } }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-      </DialogContent>
-    </Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

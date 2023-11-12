@@ -27,7 +27,7 @@ export const CardTablaAllTickets = ({
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
-      headerName: 'N° Ticket',
+      headerName: 'N°',
       headerAlign: 'center',
       align: 'center',
       flex: 0.5,
@@ -51,9 +51,9 @@ export const CardTablaAllTickets = ({
     },
     {
       field: 'UserCreaId',
-      headerName: 'Usuario Creador',
+      headerName: 'Nombre',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
@@ -80,9 +80,9 @@ export const CardTablaAllTickets = ({
     },
     {
       field: 'CategoriaId',
-      headerName: 'Categoria Ticket',
+      headerName: 'Área',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
@@ -109,9 +109,9 @@ export const CardTablaAllTickets = ({
     },
     {
       field: 'TickTitulo',
-      headerName: 'Titulo',
+      headerName: 'Título',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 200,
       renderCell: params => (
@@ -133,9 +133,9 @@ export const CardTablaAllTickets = ({
     },
     {
       field: 'TickDescripcion',
-      headerName: 'Descripcion',
+      headerName: 'Descripción',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 200,
       renderCell: params => (
@@ -159,12 +159,11 @@ export const CardTablaAllTickets = ({
       field: 'EstadoId',
       headerName: 'Estado',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const { row } = params
-        const estado = listaDatosEstados.find(x => (x.EstadoId = row.EstadoId))
+        const estado = listaDatosEstados.find(x => x.EstadoId == params.value)
 
         return (
           <Tooltip title={estado ? estado?.EstadoNombre : ''} arrow>
@@ -178,7 +177,19 @@ export const CardTablaAllTickets = ({
                 display: 'inline-block'
               }}
             >
-              {params.value ? estado?.EstadoNombre : '-'}
+              <CustomChip
+                label={params.value ? estado?.EstadoNombre : '-'}
+                skin='light'
+                color={
+                  estado?.EstadoNombre === 'En Proceso'
+                    ? 'info' 
+                    : estado?.EstadoNombre === 'Abierto'
+                      ? 'success' 
+                      : estado?.EstadoNombre === 'Cerrado'
+                        ? 'error' 
+                        : 'warning' 
+                }
+              />
             </Box>
           </Tooltip>
         )
@@ -186,9 +197,9 @@ export const CardTablaAllTickets = ({
     },
     {
       field: 'UserAsignadoId',
-      headerName: 'Soporte Asignado',
+      headerName: 'Responsable',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
@@ -215,7 +226,7 @@ export const CardTablaAllTickets = ({
     },
     {
       field: 'FechaAsignacion',
-      headerName: 'Fecha Asignación',
+      headerName: 'Fecha',
       headerAlign: 'center',
       align: 'center',
       flex: 1,
@@ -238,30 +249,6 @@ export const CardTablaAllTickets = ({
       )
     },
     {
-      field: 'Activo',
-      headerName: 'Soporte Asignado',
-      headerAlign: 'center',
-      align: 'center',
-      flex: 1,
-      minWidth: 100,
-      renderCell: params => (
-        <Tooltip title={params.value ? 'Sí' : 'No'} arrow>
-          <Box
-            component='span'
-            sx={{
-              maxWidth: '100%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: 'inline-block'
-            }}
-          >
-            <CustomChip label={params.value ? 'Sí' : 'No'} skin='light' color={params.value ? 'success' : 'error'} />
-          </Box>
-        </Tooltip>
-      )
-    },
-    {
       field: 'Acciones',
       headerName: 'Acciones',
       flex: 1,
@@ -278,7 +265,7 @@ export const CardTablaAllTickets = ({
             <Link href={`/gestor-itec/ticket/${encryptText(`${row.TickId}`)}`} passHref>
               <a target='_blank' style={{ textDecoration: 'none' }}>
                 <Tooltip title={`Ir al Ticket`} arrow>
-                  <Button sx={{ mt: 2, mb: 2 }} variant='text' color='warning'>
+                  <Button sx={{ mt: 2, mb: 2 }} variant='text' color='success'>
                     <OpenInBrowserIcon />
                   </Button>
                 </Tooltip>

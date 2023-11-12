@@ -182,13 +182,11 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
               <Close />
             </IconButton>
 
-            <Tooltip title={'Asignar Responsable'} arrow>
               <Box sx={{ mb: 8, textAlign: 'center' }}>
                 <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
                 Asignar Responsable
                 </Typography>
               </Box>
-            </Tooltip>
 
             {cargando ? (
               <UserSpinner />
@@ -215,7 +213,7 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
                             {...params}
                             error={Boolean(errorsTicket.IdUserAsignado)}
                             fullWidth
-                            label='Seleciona Al Usuario Responsable'
+                            label='Selecionar Responsable...'
                             variant='outlined'
                           />
                         )}
@@ -237,16 +235,12 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
             )}
           </DialogContent>
           <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
-            <Tooltip title={'Guardar'} arrow>
               <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
-                <Save sx={{ mr: 1 }} /> Guardar
+                <Save sx={{ mr: 1 }} /> Asignar
               </Button>
-            </Tooltip>
-            <Tooltip title={'Cancelar'} arrow>
               <Button variant='outlined' color='secondary' onClick={cerrarModal}>
                 Cancelar
               </Button>
-            </Tooltip>
           </DialogActions>
         </form>
       </Dialog>

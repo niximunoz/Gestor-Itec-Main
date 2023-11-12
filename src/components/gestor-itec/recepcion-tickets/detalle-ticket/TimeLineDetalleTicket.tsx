@@ -24,65 +24,68 @@ const Timeline = styled(MuiTimeline)<TimelineProps>({
   }
 })
 
-export const TimeLineDetalleTicket = ({ detalleTicket,listaDatosUsuarios}: Props) => {
-  
-    const getUsuario = (userCreaId: number) => {
-        return listaDatosUsuarios.find(user => user.UsuId === userCreaId)
-    }
+export const TimeLineDetalleTicket = ({ detalleTicket, listaDatosUsuarios }: Props) => {
 
-    return (
-        <Timeline
-          sx={{
-            my: 2,
-            py: 0,
-            m: 5,
-            ml: 5
-          }}
-        >
-          {detalleTicket?.map((b: ITblDetalleTicket) => {
-            const usuario = getUsuario(b.UserCreaId);
-    
-            return (
-              <TimelineItem key={b.DetalleTicketId}>
-                <TimelineContent sx={{ '& svg': { verticalAlign: 'bottom', mx: 4 } }}>
-                  <Box
-                    sx={{
-                      mb: 1,
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <Typography sx={{ mr: 2, fontWeight: 600 }}>
-                      Fecha de Creación: {renderFormartFecha(b.FechaCreacion)}
-                    </Typography>
+  const getUsuario = (userCreaId: number) => {
+    return listaDatosUsuarios.find(user => user.UsuId === userCreaId)
+  }
+
+  return (
+    <Timeline
+      sx={{
+        my: 2,
+        py: 0,
+        m: 5,
+        ml: 5
+      }}
+    >
+      {detalleTicket?.map((b: ITblDetalleTicket) => {
+        const usuario = getUsuario(b.UserCreaId);
+
+        return (
+          <TimelineItem key={b.DetalleTicketId}>
+            <TimelineContent sx={{ '& svg': { verticalAlign: 'bottom', mx: 4 } }}>
+              <Box
+                sx={{
+                  mb: 1,
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex' }}>
+                    {usuario ? (
+                      <>
+                        <Avatar src={'/images/avatars/3.png'} sx={{ width: '2rem', height: '2rem', mr: 2 }} />
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                          <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                            {usuario.UsuNombre} {usuario.UsuApellido}
+                          </Typography>
+                          <Typography variant='caption'>Autor</Typography>
+                        </Box>
+                      </>
+                    ) : null}
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' , mb: 2 }}>
-                    <Typography variant='subtitle2' sx={{ fontWeight: 600, maxWidth: '300px', whiteSpace: 'break-word' }}>
-                      Mensaje: {b.DetalleTicketDescripcion}
-                    </Typography>
-                  </Box>
-    
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between'}}>
-                    <Box sx={{ display: 'flex' }}>
-                      {usuario ? (
-                        <>
-                          <Avatar src={'/images/avatars/3.png'} sx={{ width: '2rem', height: '2rem', mr: 2 }} />
-                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                              {usuario.UsuNombre} {usuario.UsuApellido}
-                            </Typography>
-                            <Typography variant='caption'>Autor</Typography>
-                          </Box>
-                        </>
-                      ) : null}
-                    </Box>
-                  </Box>
-                </TimelineContent>
-              </TimelineItem>
-            );
-          })}
-        </Timeline>
-      )
+                </Box>
+                <Typography sx={{ mr: 2, fontWeight: 600 }}>
+                  {renderFormartFecha(b.FechaCreacion)}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Typography variant='subtitle2' sx={{ fontWeight: 600, maxWidth: '300px', whiteSpace: 'break-word' }}>
+                  {b.DetalleTicketDescripcion}
+                </Typography>
+              </Box>
+
+
+            </TimelineContent>
+          </TimelineItem>
+        );
+      })}
+
+      
+    </Timeline>
+  )
 }

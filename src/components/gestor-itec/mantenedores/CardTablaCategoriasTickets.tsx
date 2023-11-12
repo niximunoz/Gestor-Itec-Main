@@ -14,7 +14,7 @@ export const CardTablaCategoriasTickets = ({ listaDatosMantenedor }: Props) => {
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
-      headerName: '#',
+      headerName: 'N°',
       headerAlign: 'center',
       align: 'center',
       flex: 0.5,
@@ -38,7 +38,7 @@ export const CardTablaCategoriasTickets = ({ listaDatosMantenedor }: Props) => {
     },
     {
       field: 'CatNombre',
-      headerName: 'Nombre Categoria',
+      headerName: 'Categoría',
       headerAlign: 'center',
       align: 'center',
       flex: 1,
@@ -133,7 +133,7 @@ export const CardTablaCategoriasTickets = ({ listaDatosMantenedor }: Props) => {
     <Card sx={{ mb: 5, position: 'relative' }}>
       <CardHeader
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-        title={`Historial de Tickets`}
+        title={`Listado Categorías`}
       />
       <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
         {cargando ? (
