@@ -66,7 +66,14 @@ const navigation = (): VerticalNavItemsType => {
           subject: 'ADM',
           title: 'Tablas Basicas',
           icon: AccountGroupOutline,
-          path: '/gestor-itec/mantenedores'
+          path: '/gestor-itec/mantenedores/tablas-basicas'
+        },
+        {
+          action: 'read',
+          subject: 'ADM',
+          title: 'Usuarios',
+          icon: AccountGroupOutline,
+          path: '/gestor-itec/mantenedores/usuarios'
         }
       ]
     },

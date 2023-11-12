@@ -63,7 +63,7 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
     },
     {
       field: 'UserCreaId',
-      headerName: 'Nombre',
+      headerName: 'Nombre Creador',
       headerAlign: 'center',
       align: 'left',
       flex: 1,
@@ -209,18 +209,17 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
       }
     },
     {
-      field: 'UserAsignadoId',
+      field: 'UserAsignadoRut',
       headerName: 'Responsable',
       headerAlign: 'center',
       align: 'left',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const { row } = params
-        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuId = row.UserAsignadoId))
+        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuRut == params.value)) ?? null
 
         return (
-          <Tooltip title={params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : ''} arrow>
+          <Tooltip title={usuarioCrea != null ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : '-'} arrow>
             <Box
               component='span'
               sx={{
@@ -231,7 +230,7 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
                 display: 'inline-block'
               }}
             >
-              {params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : '-'}
+              {usuarioCrea != null ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : '-'}
             </Box>
           </Tooltip>
         )

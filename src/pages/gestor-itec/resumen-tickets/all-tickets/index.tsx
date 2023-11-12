@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { instanceMiddlewareApi } from 'src/axios'
 import { CardTablaAllTickets } from 'src/components/gestor-itec/recepcion-tickets/CardTablaAllTickets'
+import { useParams } from 'src/hooks/useParams'
 import { ITblCategorias, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
 import UserSpinner from 'src/layouts/components/UserSpinner'
 
@@ -11,19 +12,14 @@ const Index = () => {
   const [dataUsuarios, setDataUsuarios] = useState<ITblUsuario[]>([])
   const [dataCategorias, setDataCategorias] = useState<ITblCategorias[]>([])
   const [dataEstados, setDataEstados] = useState<ITblEstados[]>([])
-
-  useEffect(() => {
-    cargarDatos()
-  }, [])
+  const paramsUse = useParams()
 
   const cargarDatos = async () => {
     setCargando(true)
     try {
       const consultasApi = [
         { name: 'Lista de Tickets', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoTickets') },
-        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') },
-        { name: 'Lista de Categorias', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoCategoriasTickets') },
-        { name: 'Lista de Estados', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoEstadosTickets') }
+        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') }
       ]
 
       const results = await Promise.allSettled(consultasApi.map(req => req.promise))
@@ -36,13 +32,11 @@ const Index = () => {
 
       const ListaTickets = results[0].status === 'fulfilled' ? results[0].value?.data : []
       const ListaUsuarios = results[1].status === 'fulfilled' ? results[1].value?.data : []
-      const ListaCategorias = results[2].status === 'fulfilled' ? results[2].value?.data : []
-      const ListaEstados = results[3].status === 'fulfilled' ? results[3].value?.data : []
 
       setDataTickets(ListaTickets.Data)
       setDataUsuarios(ListaUsuarios.Data)
-      setDataCategorias(ListaCategorias.Data)
-      setDataEstados(ListaEstados.Data)
+      setDataCategorias(paramsUse.listadoCategorias ?? [])
+      setDataEstados(paramsUse.listadoEstados ?? [])
     } catch (error) {
       console.error('Descripción error:', error)
       setCargando(false)
@@ -52,6 +46,14 @@ const Index = () => {
       setCargando(false)
     }
   }
+
+  useEffect(() => {
+    const inicializar = async () => {
+      await cargarDatos()
+    }
+    
+    inicializar()
+  }, [])
 
   return (
     <>

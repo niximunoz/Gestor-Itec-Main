@@ -274,6 +274,48 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetCountTicketsGeneral">
+            <summary>
+            Permite obtener una estadistica completa de tickets general
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.GetCountTicketsGeneralByUsuarioRut(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Permite obtener una estadistica completa de tickets del usuario
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.PostAgregarCategoria(ItecGroup.Applications.DTO.Parametros.CreateCategoriaDto)">
+            <summary>
+            Permite Agregar una nueva Categoria
+            </summary>
+            <param name="categoria"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.PostActualizarCategoria(ItecGroup.Applications.DTO.Parametros.UpdateCategoriaDto)">
+            <summary>
+            Permite Actualizar una Categoria
+            </summary>
+            <param name="categoria"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.PostAgregarEstado(ItecGroup.Applications.DTO.Parametros.CreateEstadoDto)">
+            <summary>
+            Permite Agregar un nuevo Estado
+            </summary>
+            <param name="estado"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.PostActualizarEstado(ItecGroup.Applications.DTO.Parametros.UpdateEstadoDto)">
+            <summary>
+            Permite Actualizar un Estado
+            </summary>
+            <param name="estado"></param>
+            <returns></returns>
+        </member>
         <member name="T:ItecGroup.Api.Controllers.UsuariosController">
             <summary>
             Clase de implementacion de Interfaz IUsuariosApplication
@@ -303,6 +345,33 @@
             Actualizar un usuario
             </summary>
             <param name="nuevoUsuario"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.GetAllRolUsuario">
+            <summary>
+            Permite obtener los roles de usuario
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.PostAgregarRolUsuario(ItecGroup.Applications.DTO.Usuarios.CreateRolUsuarioDto)">
+            <summary>
+            Permite Crear un Nuevo Rol de usuario
+            </summary>
+            <param name="rolUsuario"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.PostActualizarRolUsuario(ItecGroup.Applications.DTO.Usuarios.UpdateRolUsuarioDto)">
+            <summary>
+            Permite Actualizar un Rol de Usuario
+            </summary>
+            <param name="rolUsuario"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.GetUsuarioByRut(ItecGroup.Applications.DTO.Generales.GetIdDto)">
+            <summary>
+            Permite Obtener el Usuario por su Rut
+            </summary>
+            <param name="rutConsulta"></param>
             <returns></returns>
         </member>
         <member name="T:ItecGroup.Api.Core.WebApiApplication">
