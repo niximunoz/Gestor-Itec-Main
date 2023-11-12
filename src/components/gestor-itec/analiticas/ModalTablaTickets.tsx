@@ -364,7 +364,6 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
       </Tooltip>
 
       <Dialog
-      <Dialog
         fullWidth
         open={abrir}
         maxWidth='lg'

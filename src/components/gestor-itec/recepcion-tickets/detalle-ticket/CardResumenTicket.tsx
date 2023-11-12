@@ -71,7 +71,6 @@ export const ResumenTicket = ({
     try {
       setCargando(true)
       if (ticket != null) {
-      if (ticket != null) {
         const { id: idUser } = JSON.parse(window.localStorage.getItem('userData')!)
 
         const newTicket = {
@@ -82,15 +81,8 @@ export const ResumenTicket = ({
           TickDescripcion: data.Descripción,
           EstadoId: estadoTicket?.EstadoId,
           FechaCreacion: ticket.FechaCreacion,
-          UserCreaId: idUser,
-          CategoriaId: categoriaTicket?.CatId,
-          TickTitulo: data.Titulo,
-          TickDescripcion: data.Descripción,
-          EstadoId: estadoTicket?.EstadoId,
-          FechaCreacion: ticket.FechaCreacion,
           UserAsignadoId: userAsignadoTicket?.UsuId,
           FechaAsignacion: new Date(),
-          Activo: ticket.Activo
           Activo: ticket.Activo
         }
 
@@ -105,7 +97,6 @@ export const ResumenTicket = ({
             confirmButtonText: 'Aceptar'
           })
         }
-
       } else {
         Swal.fire({
           title: 'Ocurrio un error',
@@ -194,7 +185,6 @@ export const ResumenTicket = ({
         <CardHeader
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
           title={`Detalle Ticket N° ${ticket?.TickId}`}
-
         />
         <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
           <form onSubmit={handleSubmit(guardarDatos, onErrors)}>
@@ -377,10 +367,8 @@ export const ResumenTicket = ({
               )}
             </DialogContent>
             <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
-                <ModalAgregarDetalleTicket
-                  idTicketAbierto={ticket?.TickId ?? null}
-                />
-              
+              <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} />
+
               <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
                 <Save sx={{ mr: 1 }} /> Guardar
               </Button>
