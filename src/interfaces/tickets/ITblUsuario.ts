@@ -1,6 +1,7 @@
 export interface ITblUsuario {
     UsuId : number
-    UsuRut : string
+    UsuRut : number
+    UsuDvRut : string
     UsuNombre : string
     UsuApellido : string
     UsuEmail : string

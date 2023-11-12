@@ -34,20 +34,19 @@ const Transition = forwardRef(function Transition(
 })
 
 const schemaTicket = yup.object({
-  IdUserAsignado: yup.number().required('Campo Requerido')
+  RutUsuarioAsignado: yup.number().required('Campo Requerido')
 })
 
 interface IFormInputs {
-  IdUserAsignado: number | null
+  RutUsuarioAsignado: number | null
 }
 
 type Props = {
   idTicketSeleccionado: number
-  listaDatosUsuarios: ITblUsuario[]
   listaDatosTickets: ITblTicket[]
 }
 
-export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets, idTicketSeleccionado }: Props) => {
+export const ModalAsignarResponsable = ({ listaDatosTickets, idTicketSeleccionado }: Props) => {
   const {
     handleSubmit,
     control: controlTicket,
@@ -62,11 +61,11 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
   const [abrir, setAbrir] = useState<boolean>(false)
   const [ticket, setTicket] = useState<ITblTicket | null>(null)
   const [userAsignadoTicket, setUserAsignadoTicket] = useState<ITblUsuario | null>(null)
+  const [listadoUsuariosMantenedor, setListadoUsuariosMantenedor] = useState<ITblUsuario[]>([])
 
   const abrirModal = () => {
     setAbrir(true)
-    if (idTicketSeleccionado > 0 && listaDatosUsuarios.length > 0) {
-        console.log(listaDatosUsuarios)
+    if (idTicketSeleccionado > 0) {
       cargarTicket(idTicketSeleccionado)
     }
   }
@@ -83,13 +82,14 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
       setCargando(true)
       if (data != null) {
         const newTicket = {
+          TickId: ticket?.TickId,
           UserCreaId: ticket?.UserCreaId,
           CategoriaId: ticket?.CategoriaId,
           TickTitulo: ticket?.TickTitulo,
           TickDescripcion: ticket?.TickDescripcion,
           EstadoId: ticket?.EstadoId,
           FechaCreacion: ticket?.FechaCreacion,
-          UserAsignadoId: userAsignadoTicket?.UsuId ?? ticket?.UserAsignadoId,
+          UserAsignadoRut: userAsignadoTicket?.UsuRut ?? ticket?.UserAsignadoRut,
           FechaAsignacion: new Date(),
           Activo: ticket?.Activo
         }
@@ -115,7 +115,7 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
         })
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
       setCargando(false)
 
       return
@@ -124,13 +124,15 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
     }
   }
 
-  const cargarTicket = (idTicket: number) => {
+  const cargarTicket = async (idTicket: number) => {
     try {
       setCargando(true)
+      const { data: ListadoUsuarios } = await instanceMiddlewareApi.get(`/Usuarios/ObtenerUsuarios`)
+      setListadoUsuariosMantenedor(ListadoUsuarios.Data ?? [])
       if (idTicket > 0) {
         const ticketCaso = listaDatosTickets.find(x => x.TickId == idTicket)
         setTicket(ticketCaso ?? null)
-        const userAsignadoCaso = listaDatosUsuarios.find(x => x.UsuId == ticketCaso?.UserAsignadoId)
+        const userAsignadoCaso = listadoUsuariosMantenedor.find(x => x.UsuRut == ticketCaso?.UserAsignadoRut)
         setUserAsignadoTicket(userAsignadoCaso ?? null)
       } else {
         Swal.fire({
@@ -152,10 +154,9 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
   }
 
   const handleChangeUserCreaTicket = (data: ITblUsuario | null) => {
-    console.log("Data recibida:", data)
     setUserAsignadoTicket(data)
-    const userId = data ? data.UsuId : null;
-    setValueTicket('IdUserAsignado', userId, { shouldValidate: true });
+    const userRut = data ? data.UsuRut : null
+    setValueTicket('RutUsuarioAsignado', userRut, { shouldValidate: true })
   }
   const onErrors: any = (errors: any, e: any) => console.log(errors, e)
 
@@ -185,7 +186,7 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
             <Tooltip title={'Asignar Responsable'} arrow>
               <Box sx={{ mb: 8, textAlign: 'center' }}>
                 <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
-                Asignar Responsable
+                  Asignar Responsable
                 </Typography>
               </Box>
             </Tooltip>
@@ -196,7 +197,7 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
               <Grid container spacing={5}>
                 <Grid item xs={12} sm={12}>
                   <Controller
-                    name='IdUserAsignado'
+                    name='RutUsuarioAsignado'
                     control={controlTicket}
                     defaultValue={null}
                     render={() => (
@@ -204,16 +205,15 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
                         filterSelectedOptions
                         value={userAsignadoTicket ?? null}
                         id='tags-standard'
-                        options={listaDatosUsuarios}
+                        options={listadoUsuariosMantenedor}
                         getOptionLabel={option => `${option.UsuNombre} ${option.UsuApellido}` ?? ''}
                         onChange={(e, data) => {
-                            handleChangeUserCreaTicket(data)
-                          }}
-                          
+                          handleChangeUserCreaTicket(data)
+                        }}
                         renderInput={params => (
                           <TextField
                             {...params}
-                            error={Boolean(errorsTicket.IdUserAsignado)}
+                            error={Boolean(errorsTicket.RutUsuarioAsignado)}
                             fullWidth
                             label='Seleciona Al Usuario Responsable'
                             variant='outlined'
@@ -229,8 +229,10 @@ export const ModalAsignarResponsable = ({ listaDatosUsuarios, listaDatosTickets,
                       />
                     )}
                   />
-                  {errorsTicket.IdUserAsignado && (
-                    <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.IdUserAsignado.message}</FormHelperText>
+                  {errorsTicket.RutUsuarioAsignado && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errorsTicket.RutUsuarioAsignado.message}
+                    </FormHelperText>
                   )}
                 </Grid>
               </Grid>

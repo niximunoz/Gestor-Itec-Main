@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react"
+import { ITblCategorias, ITblEstados } from "src/interfaces"
 
 export type ErrCallbackType = (err: { [key: string]: string }) => void
 
@@ -42,4 +43,11 @@ export type AuthValuesType = {
   setIsInitialized: (value: boolean) => void
   login: (params: LoginParams, errorCallback?: ErrCallbackType, setCargando?: Dispatch<SetStateAction<boolean>>) => void
   register: (params: RegisterParams, errorCallback?: ErrCallbackType) => void
+}
+
+export type ParamsValueType = {
+  listadoCategorias: ITblCategorias[] | null
+  setListadoCategorias: (value: ITblCategorias[] | null) => void
+  listadoEstados: ITblEstados[] | null
+  setListadoEstados: (value: ITblEstados[] | null) => void
 }

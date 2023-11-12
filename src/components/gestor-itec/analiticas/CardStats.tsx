@@ -20,7 +20,7 @@ interface Props {
   listaDatosUsuarios: ITblUsuario[]
 }
 
-const CardStats = ({ data,listaDatosTickets,listaDatosUsuarios }: Props) => {
+const CardStats = ({ data, listaDatosTickets, listaDatosUsuarios }: Props) => {
   // ** Vars
   const { title, chipColor, chipText, src, stats, trend, trendNumber } = data
 
@@ -30,9 +30,9 @@ const CardStats = ({ data,listaDatosTickets,listaDatosUsuarios }: Props) => {
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
         title={title}
         action={
-          <ModalTablaTickets 
-            listaDatosTickets={listaDatosTickets ?? []} 
-            listaDatosUsuarios={listaDatosUsuarios ?? []} 
+          <ModalTablaTickets
+            listaDatosTickets={listaDatosTickets ?? []}
+            listaDatosUsuarios={listaDatosUsuarios ?? []}
           />
         }
       />

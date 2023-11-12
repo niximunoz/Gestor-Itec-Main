@@ -41,7 +41,7 @@ const schemaTicket = yup.object({
 interface IFormInputs {
   Titulo: string
   Categoria: string
-  Descripción: number
+  Descripción: string
   IdUserAsignado: number | null
   IdEstado: number | null
 }

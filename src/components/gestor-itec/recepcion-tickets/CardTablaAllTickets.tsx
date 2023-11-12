@@ -185,18 +185,17 @@ export const CardTablaAllTickets = ({
       }
     },
     {
-      field: 'UserAsignadoId',
+      field: 'UserAsignadoRut',
       headerName: 'Soporte Asignado',
       headerAlign: 'center',
       align: 'center',
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const { row } = params
-        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuId = row.UserAsignadoId))
+        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuRut = params.value))
 
         return (
-          <Tooltip title={params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : ''} arrow>
+          <Tooltip title={usuarioCrea ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : ''} arrow>
             <Box
               component='span'
               sx={{
@@ -207,7 +206,7 @@ export const CardTablaAllTickets = ({
                 display: 'inline-block'
               }}
             >
-              {params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : '-'}
+              {usuarioCrea ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : '-'}
             </Box>
           </Tooltip>
         )
@@ -271,7 +270,6 @@ export const CardTablaAllTickets = ({
       width: 100,
       renderCell: params => {
         const { row } = params
-        console.log(dataUsuarios)
 
         return (
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
@@ -284,11 +282,7 @@ export const CardTablaAllTickets = ({
                 </Tooltip>
               </a>
             </Link>
-            <ModalAsignarResponsable
-              idTicketSeleccionado={row.TickId}
-              listaDatosUsuarios={listaDatosUsuarios ?? dataUsuarios}
-              listaDatosTickets={listaDatosTickets}
-            />
+            <ModalAsignarResponsable idTicketSeleccionado={row.TickId} listaDatosTickets={listaDatosTickets} />
           </Box>
         )
       }
@@ -298,7 +292,6 @@ export const CardTablaAllTickets = ({
   const [cargando, setCargando] = useState<boolean>(true)
   const [listDatos, setListDatos] = useState<any[]>([])
   const [listDatosOrigen, setListDatosOrigen] = useState<any[]>([])
-  const [dataUsuarios, setDataUsuarios] = useState<ITblUsuario[]>([])
   const [row, setRow] = useState<number>(10)
   const [buscar, setBuscar] = useState<string>('')
 
@@ -320,8 +313,6 @@ export const CardTablaAllTickets = ({
       setCargando(true)
       setListDatosOrigen(listaDatosTickets)
       setListDatos(listaDatosTickets)
-      console.log(listaDatosUsuarios)
-      setDataUsuarios(listaDatosUsuarios)
     } catch (error) {
       console.log(error)
       setCargando(false)

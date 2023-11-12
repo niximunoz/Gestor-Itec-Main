@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { instanceMiddlewareApi } from 'src/axios'
 import { CardAnaliticas } from 'src/components/gestor-itec/analiticas'
+import { ParamsProvider } from 'src/context/ParamsContext'
 import { ITblUsuario } from 'src/interfaces'
 import UserSpinner from 'src/layouts/components/UserSpinner'
 
@@ -40,8 +41,9 @@ const Index = () => {
         <title>Analiticas</title>
         <meta name='description' content='Analiticas' />
       </Head>
-
+      <ParamsProvider>
         <CardAnaliticas listadoUsuarios={listadoUsuarios}/>
+      </ParamsProvider>
     
     </>
   )

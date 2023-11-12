@@ -70,36 +70,34 @@ export const ResumenTicket = ({
   const guardarDatos = async (data: IFormInputs) => {
     try {
       setCargando(true)
-      if(ticket != null){
+      if (ticket != null) {
         const { id: idUser } = JSON.parse(window.localStorage.getItem('userData')!)
 
         const newTicket = {
           TickId: ticket.TickId,
-          UserCreaId : idUser,
-          CategoriaId : categoriaTicket?.CatId,
-          TickTitulo : data.Titulo,
-          TickDescripcion : data.Descripción,
-          EstadoId : estadoTicket?.EstadoId,
-          FechaCreacion : ticket.FechaCreacion,
+          UserCreaId: idUser,
+          CategoriaId: categoriaTicket?.CatId,
+          TickTitulo: data.Titulo,
+          TickDescripcion: data.Descripción,
+          EstadoId: estadoTicket?.EstadoId,
+          FechaCreacion: ticket.FechaCreacion,
           UserAsignadoId: userAsignadoTicket?.UsuId,
           FechaAsignacion: new Date(),
-          Activo : ticket.Activo
+          Activo: ticket.Activo
         }
 
-        const { data: dataTicket } = await instanceMiddlewareApi.post(
-          `/Parametros/UpdateTicket`,newTicket)
+        const { data: dataTicket } = await instanceMiddlewareApi.post(`/Parametros/UpdateTicket`, newTicket)
 
-          if(dataTicket.Data != null){
-            Swal.fire({
-              title: 'Exito',
-              text: 'Se Creo exitosamente el Comentario',
-              icon: 'success',
-              confirmButtonColor: '#0098aa',
-              confirmButtonText: 'Aceptar'
-            })
-          }
-
-      }else{
+        if (dataTicket.Data != null) {
+          Swal.fire({
+            title: 'Exito',
+            text: 'Se Creo exitosamente el Comentario',
+            icon: 'success',
+            confirmButtonColor: '#0098aa',
+            confirmButtonText: 'Aceptar'
+          })
+        }
+      } else {
         Swal.fire({
           title: 'Ocurrio un error',
           text: 'No se pudo crear el Ticket',
@@ -134,7 +132,7 @@ export const ResumenTicket = ({
         setEstadoTicket(estadoFind ?? null)
         setValueTicket('EstadoTicket', estadoFind?.EstadoNombre ?? null)
 
-        const userCreaFind = listaDatosUsuarios.find(x => x.UsuId == infoTicket.UserAsignadoId)
+        const userCreaFind = listaDatosUsuarios.find(x => x.UsuRut == infoTicket.UserAsignadoRut)
         setUserAsignadoTicket(userCreaFind ?? null)
         setValueTicket('UserAsignado', userCreaFind?.UsuNombre ?? null)
       } else {
@@ -187,11 +185,7 @@ export const ResumenTicket = ({
         <CardHeader
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
           title={`Resumen Ticket ${ticket?.TickId}`}
-          action={
-            <ModalAgregarDetalleTicket
-              idTicketAbierto={ticket?.TickId ?? null}
-            />
-          }
+          action={<ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} />}
         />
         <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
           <form onSubmit={handleSubmit(guardarDatos, onErrors)}>
@@ -350,7 +344,7 @@ export const ResumenTicket = ({
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           fullWidth
-                          multiline 
+                          multiline
                           rows={6}
                           label='Descripción'
                           onChange={onChange}
@@ -367,7 +361,7 @@ export const ResumenTicket = ({
                   </Grid>
 
                   <Grid item xs={12} sm={12}>
-                    <TimeLineDetalleTicket detalleTicket={infoDetallesTicket} listaDatosUsuarios={listaDatosUsuarios}/>
+                    <TimeLineDetalleTicket detalleTicket={infoDetallesTicket} listaDatosUsuarios={listaDatosUsuarios} />
                   </Grid>
                 </Grid>
               )}

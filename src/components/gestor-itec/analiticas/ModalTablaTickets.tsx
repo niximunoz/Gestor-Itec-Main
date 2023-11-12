@@ -1,4 +1,15 @@
-import { Box, Button, Card, CardContent, CardHeader, Dialog, DialogContent, DialogTitle, Fade, FadeProps, Grid, IconButton, Tooltip } from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Fade,
+  FadeProps,
+  Grid,
+  IconButton,
+  Tooltip
+} from '@mui/material'
 import { DataGridPremium, GridColDef, esES } from '@mui/x-data-grid-premium'
 import { ReactElement, Ref, forwardRef, useEffect, useState } from 'react'
 import { encryptText, escapeRegExp, formatearFecha } from 'src/helpers'
@@ -8,9 +19,9 @@ import CustomChip from 'src/@core/components/mui/chip'
 import Link from 'next/link'
 import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser'
 import { ITblCategorias, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
-import { instanceMiddlewareApi } from 'src/axios'
-import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 import { Close } from 'mdi-material-ui'
+import { useParams } from 'src/hooks/useParams'
 
 const Transition = forwardRef(function Transition(
   props: FadeProps & { children?: ReactElement<any, any> },
@@ -24,10 +35,7 @@ type Props = {
   listaDatosUsuarios: ITblUsuario[]
 }
 
-export const ModalTablaTickets = ({
-  listaDatosTickets,
-  listaDatosUsuarios
-}: Props) => {
+export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Props) => {
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
@@ -275,7 +283,6 @@ export const ModalTablaTickets = ({
       width: 100,
       renderCell: params => {
         const { row } = params
-        console.log(dataUsuarios)
 
         return (
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
@@ -303,6 +310,7 @@ export const ModalTablaTickets = ({
   const [row, setRow] = useState<number>(10)
   const [buscar, setBuscar] = useState<string>('')
   const [abrir, setAbrir] = useState<boolean>(false)
+  const paramsUse = useParams()
 
   const requestSearch = (texto: string) => {
     setBuscar(texto)
@@ -320,18 +328,13 @@ export const ModalTablaTickets = ({
   const cargarDatos = async () => {
     try {
       setCargando(true)
-      const { data: ListadoCategorias } = await instanceMiddlewareApi.get(`/Parametros/ObtenerListadoCategoriasTickets`)
-      const { data: ListadoEstados } = await instanceMiddlewareApi.get(`/Parametros/ObtenerListadoEstadosTickets`)
-
-      setListadoCategorias(ListadoCategorias.Data ?? [])
-      setListadoEstados(ListadoEstados.Data ?? [])
-
-
+      setListadoCategorias(paramsUse.listadoCategorias ?? [])
+      setListadoEstados(paramsUse.listadoEstados ?? [])
       setListDatosOrigen(listaDatosTickets)
       setListDatos(listaDatosTickets)
       setDataUsuarios(listaDatosUsuarios)
     } catch (error) {
-      console.log(error)
+      console.error(error)
       setCargando(false)
 
       return
@@ -353,11 +356,15 @@ export const ModalTablaTickets = ({
   }
 
   useEffect(() => {
-    if (listaDatosTickets.length > 0 && listaDatosUsuarios.length > 0) {
-      cargarDatos()
-    } else {
-      setCargando(false)
+    const inicializar = async () => {
+      if (listaDatosTickets.length > 0 && listaDatosUsuarios.length > 0) {
+        await cargarDatos()
+      } else {
+        setCargando(false)
+      }
     }
+
+    inicializar()
   }, [listaDatosTickets, listaDatosUsuarios])
 
   return (
@@ -368,7 +375,7 @@ export const ModalTablaTickets = ({
         </Button>
       </Tooltip>
 
-    <Dialog
+      <Dialog
         fullWidth
         open={abrir}
         maxWidth='lg'
@@ -376,46 +383,45 @@ export const ModalTablaTickets = ({
         onClose={cerrarModal}
         TransitionComponent={Transition}
         onBackdropClick={cerrarModal}
-      > 
-      
-      <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 15 }, pt: { xs: 8, sm: 12.5 }, position: 'relative' }}>
-      <IconButton size='small' onClick={cerrarModal} sx={{ position: 'absolute', right: '1rem', top: '1rem' }}>
-              <Close />
-        </IconButton>
-        {cargando ? (
-          <UserSpinner />
-        ) : (
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <DataGridPremium
-                sx={{ height: '550px' }}
-                rows={listDatos.map((item, index) => ({
-                  ...item,
-                  CorrelativeId: index + 1
-                }))}
-                columns={columns}
-                pageSize={row}
-                onPageSizeChange={newPageSize => setRow(newPageSize)}
-                rowsPerPageOptions={[5, 10, 20, 50]}
-                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                pagination
-                getRowId={row => row.TickId}
-                components={{ Toolbar: ToolBarBasePremium }}
-                componentsProps={{
-                  toolbar: {
-                    value: buscar,
-                    onChange: (event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value),
-                    clearSearch: () => requestSearch(''),
-                    disableExport: false
-                  }
-                }}
-                initialState={{ pinnedColumns: { right: ['Acciones'] } }}
-              />
+      >
+        <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 15 }, pt: { xs: 8, sm: 12.5 }, position: 'relative' }}>
+          <IconButton size='small' onClick={cerrarModal} sx={{ position: 'absolute', right: '1rem', top: '1rem' }}>
+            <Close />
+          </IconButton>
+          {cargando ? (
+            <UserSpinner />
+          ) : (
+            <Grid container spacing={5}>
+              <Grid item xs={12}>
+                <DataGridPremium
+                  sx={{ height: '550px' }}
+                  rows={listDatos.map((item, index) => ({
+                    ...item,
+                    CorrelativeId: index + 1
+                  }))}
+                  columns={columns}
+                  pageSize={row}
+                  onPageSizeChange={newPageSize => setRow(newPageSize)}
+                  rowsPerPageOptions={[5, 10, 20, 50]}
+                  localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                  pagination
+                  getRowId={row => row.TickId}
+                  components={{ Toolbar: ToolBarBasePremium }}
+                  componentsProps={{
+                    toolbar: {
+                      value: buscar,
+                      onChange: (event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value),
+                      clearSearch: () => requestSearch(''),
+                      disableExport: false
+                    }
+                  }}
+                  initialState={{ pinnedColumns: { right: ['Acciones'] } }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-      </DialogContent>
-    </Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
