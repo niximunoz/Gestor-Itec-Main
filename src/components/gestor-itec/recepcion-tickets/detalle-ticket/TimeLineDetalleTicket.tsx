@@ -27,7 +27,9 @@ const Timeline = styled(MuiTimeline)<TimelineProps>({
 export const TimeLineDetalleTicket = ({ detalleTicket, listaDatosUsuarios }: Props) => {
 
   const getUsuario = (userCreaId: number) => {
-    return listaDatosUsuarios.find(user => user.UsuId === userCreaId)
+    const usuario = listaDatosUsuarios.find(user => user.UsuId === userCreaId)
+    console.log(usuario)
+    return usuario
   }
 
   return (

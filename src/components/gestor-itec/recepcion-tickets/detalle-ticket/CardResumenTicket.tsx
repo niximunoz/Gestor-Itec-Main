@@ -207,9 +207,9 @@ export const ResumenTicket = ({
                           error={Boolean(errorsTicket.Titulo)}
                           id='filled-multiline-flexible'
                           multiline
-                          // InputProps={{
-                          //   readOnly: true,
-                          // }}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -233,6 +233,7 @@ export const ResumenTicket = ({
                             onChange(data)
                             handleChangeCategoriaTicket(data)
                           }}
+                          
                           renderInput={params => (
                             <TextField
                               {...params}
@@ -249,6 +250,7 @@ export const ResumenTicket = ({
                               </li>
                             )
                           }}
+                          disabled
                         />
                       )}
                     />
@@ -290,6 +292,7 @@ export const ResumenTicket = ({
                               </li>
                             )
                           }}
+                          disabled
                         />
                       )}
                     />
@@ -329,6 +332,7 @@ export const ResumenTicket = ({
                               </li>
                             )
                           }}
+                          disabled
                         />
                       )}
                     />
@@ -352,6 +356,9 @@ export const ResumenTicket = ({
                           value={value}
                           error={Boolean(errorsTicket.Descripción)}
                           id='textarea-outlined-static'
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
