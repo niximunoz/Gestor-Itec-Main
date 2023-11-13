@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, CardHeader, Grid, Tooltip } from '@mui/material'
-import { DataGridPremium, GridColDef, esES } from '@mui/x-data-grid-premium'
+import { DataGridPremium, GridColDef, GridRenderCellParams, esES } from '@mui/x-data-grid-premium'
 import { useEffect, useState } from 'react'
 import { escapeRegExp } from 'src/helpers'
 import UserSpinner from 'src/layouts/components/UserSpinner'
@@ -8,6 +8,7 @@ import { ToolBarBasePremium } from '../../datagrid'
 import { instanceMiddlewareApi } from 'src/axios'
 import CustomChip from 'src/@core/components/mui/chip'
 import { ModalAgregarUsuario } from './agregar'
+import { ModalEditarUsuario } from './editar'
 
 export const CardTablaUsuarios = () => {
   const columns: GridColDef[] = [
@@ -266,22 +267,14 @@ export const CardTablaUsuarios = () => {
       align: 'center',
       sortable: false,
       width: 100,
-      renderCell: params => (
-        <Tooltip title={params.value ? params.value.toString() : ''} arrow>
-          <Box
-            component='span'
-            sx={{
-              maxWidth: '100%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: 'inline-block'
-            }}
-          >
-            {params.value ? params.value : '-'}
+      renderCell: (params: GridRenderCellParams) => {
+        console.log(params.row)
+        return (
+          <Box>
+            <ModalEditarUsuario recargar={cargarDatos} data={params.row} />
           </Box>
-        </Tooltip>
-      )
+        )
+      }
     }
   ]
 

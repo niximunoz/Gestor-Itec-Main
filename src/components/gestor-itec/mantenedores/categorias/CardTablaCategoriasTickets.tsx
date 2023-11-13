@@ -1,16 +1,15 @@
 import { Box, Card, CardContent, CardHeader, Grid, Tooltip } from '@mui/material'
-import { DataGridPremium, GridColDef, esES } from '@mui/x-data-grid-premium'
+import { DataGridPremium, GridColDef, GridRenderCellParams, esES } from '@mui/x-data-grid-premium'
 import { useEffect, useState } from 'react'
 import { escapeRegExp } from 'src/helpers'
 import UserSpinner from 'src/layouts/components/UserSpinner'
-import { ToolBarBasePremium } from '../datagrid'
-import { ITblEstados } from 'src/interfaces'
+import { ITblCategorias } from 'src/interfaces'
+import { ToolBarBasePremium } from '../../datagrid'
+import { ModalAgregarCategoria } from './agregar'
+import { ModalEditarCategoria } from './editar'
+import { instanceMiddlewareApi } from 'src/axios'
 
-type Props = {
-  listaDatosMantenedor: ITblEstados[]
-}
-
-export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
+export const CardTablaCategoriasTickets = () => {
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
@@ -37,34 +36,10 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
       )
     },
     {
-      field: 'EstadoNombre',
-      headerName: 'Estado',
+      field: 'CatNombre',
+      headerName: 'Categoría',
       headerAlign: 'center',
-      align: 'left',
-      flex: 1,
-      minWidth: 200,
-      renderCell: params => (
-        <Tooltip title={params.value ? params.value.toString() : ''} arrow>
-          <Box
-            component='span'
-            sx={{
-              maxWidth: '100%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: 'inline-block'
-            }}
-          >
-            {params.value ? params.value : '-'}
-          </Box>
-        </Tooltip>
-      )
-    },
-    {
-      field: 'EstadoDescripcion',
-      headerName: 'Descripción',
-      headerAlign: 'center',
-      align: 'left',
+      align: 'center',
       flex: 1,
       minWidth: 400,
       renderCell: params => (
@@ -92,28 +67,19 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
       align: 'center',
       sortable: false,
       width: 100,
-      renderCell: params => (
-        <Tooltip title={params.value ? params.value.toString() : ''} arrow>
-          <Box
-            component='span'
-            sx={{
-              maxWidth: '100%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: 'inline-block'
-            }}
-          >
-            {params.value ? params.value : '-'}
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <Box>
+            <ModalEditarCategoria recargar={cargarDatos} data={params.row} />
           </Box>
-        </Tooltip>
-      )
+        )
+      }
     }
   ]
 
   const [cargando, setCargando] = useState<boolean>(true)
-  const [listDatos, setListDatos] = useState<ITblEstados[]>([])
-  const [listDatosOrigen, setListDatosOrigen] = useState<ITblEstados[]>([])
+  const [listDatos, setListDatos] = useState<ITblCategorias[]>([])
+  const [listDatosOrigen, setListDatosOrigen] = useState<ITblCategorias[]>([])
   const [row, setRow] = useState<number>(10)
   const [buscar, setBuscar] = useState<string>('')
 
@@ -130,13 +96,16 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
     setListDatos(FilasFiltradas)
   }
 
-  const cargarDatos = () => {
+  const cargarDatos = async () => {
     try {
       setCargando(true)
-        setListDatosOrigen(listaDatosMantenedor)
-        setListDatos(listaDatosMantenedor)
+      const { data: ListadoCategorias } = await instanceMiddlewareApi.get(
+        `/Parametros/ObtenerListadoCategoriasTickets`
+      )
+        setListDatosOrigen(ListadoCategorias.Data ?? [])
+        setListDatos(ListadoCategorias.Data ?? [])
     } catch (error) {
-      console.log(error)
+      console.error(error)
       setCargando(false)
 
       return
@@ -146,21 +115,23 @@ export const CardTablaEstadosTickets = ({ listaDatosMantenedor }: Props) => {
   }
 
   useEffect(() => {
-    if(listaDatosMantenedor.length > 0){
-      cargarDatos()
-    }else{
-      setCargando(false)
+    const inicializar = async () => {
+      await cargarDatos()
     }
-  }, [listaDatosMantenedor])
+      inicializar()
+  }, [])
 
   return (
     <Card sx={{ mb: 5, position: 'relative' }}>
       <CardHeader
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-        title={`Listado Estados`}
+        title={`Listado Categorías`}
+        action={
+          <ModalAgregarCategoria recargar={cargarDatos}/>
+        }
       />
       <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
-      {cargando ? (
+        {cargando ? (
           <UserSpinner />  
         ) : (
           

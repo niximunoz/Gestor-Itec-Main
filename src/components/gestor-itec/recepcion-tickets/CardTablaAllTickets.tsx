@@ -10,20 +10,28 @@ import Link from 'next/link'
 import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser'
 import { ITblCategorias, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
 import { ModalAsignarResponsable } from './ModalAsignarResponsable'
+import { instanceMiddlewareApi } from 'src/axios'
 
 type Props = {
   listaDatosTickets: ITblTicket[]
-  listaDatosUsuarios: ITblUsuario[]
-  listaDatosCategorias: ITblCategorias[]
-  listaDatosEstados: ITblEstados[]
 }
 
-export const CardTablaAllTickets = ({
-  listaDatosTickets,
-  listaDatosUsuarios,
-  listaDatosCategorias,
-  listaDatosEstados
-}: Props) => {
+type ChipColor = 'default' | 'info' | 'success' | 'error' | 'warning' | 'primary' | 'secondary'
+
+function getColorForEstado(estadoNombre: string | undefined): ChipColor {
+  switch (estadoNombre) {
+    case 'En Proceso':
+      return 'info'
+    case 'Abierto':
+      return 'success'
+    case 'Cerrado':
+      return 'error'
+    default:
+      return 'warning'
+  }
+}
+
+export const CardTablaAllTickets = ({ listaDatosTickets }: Props) => {
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
@@ -58,7 +66,7 @@ export const CardTablaAllTickets = ({
       minWidth: 100,
       renderCell: params => {
         const { row } = params
-        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuId = row.UserCreaId))
+        const usuarioCrea = dataUsuarios.find(x => (x.UsuId = row.UserCreaId))
 
         return (
           <Tooltip title={params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : ''} arrow>
@@ -87,7 +95,7 @@ export const CardTablaAllTickets = ({
       minWidth: 100,
       renderCell: params => {
         const { row } = params
-        const categoria = listaDatosCategorias.find(x => (x.CatId = row.CategoriaId))
+        const categoria = dataCategorias.find(x => (x.CatId == row.CategoriaId))
 
         return (
           <Tooltip title={categoria ? categoria?.CatNombre : ''} arrow>
@@ -163,10 +171,11 @@ export const CardTablaAllTickets = ({
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const estado = listaDatosEstados.find(x => x.EstadoId == params.value)
+        const estado = dataEstados.find(x => x.EstadoId === params.value)
+        const color = estado ? getColorForEstado(estado.EstadoNombre) : 'warning'
 
         return (
-          <Tooltip title={estado ? estado?.EstadoNombre : ''} arrow>
+          <Tooltip title={estado ? estado.EstadoNombre : ''} arrow>
             <Box
               component='span'
               sx={{
@@ -177,19 +186,7 @@ export const CardTablaAllTickets = ({
                 display: 'inline-block'
               }}
             >
-              <CustomChip
-                label={params.value ? estado?.EstadoNombre : '-'}
-                skin='light'
-                color={
-                  estado?.EstadoNombre === 'En Proceso'
-                    ? 'info' 
-                    : estado?.EstadoNombre === 'Abierto'
-                      ? 'success' 
-                      : estado?.EstadoNombre === 'Cerrado'
-                        ? 'error' 
-                        : 'warning' 
-                }
-              />
+              <CustomChip label={estado ? estado.EstadoNombre : '-'} skin='light' color={color} />
             </Box>
           </Tooltip>
         )
@@ -203,7 +200,7 @@ export const CardTablaAllTickets = ({
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuRut == params.value))
+        const usuarioCrea = dataUsuarios.find(x => x.UsuRut == params.value)
 
         return (
           <Tooltip title={usuarioCrea ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : '-'} arrow>
@@ -281,6 +278,9 @@ export const CardTablaAllTickets = ({
   const [listDatosOrigen, setListDatosOrigen] = useState<any[]>([])
   const [row, setRow] = useState<number>(10)
   const [buscar, setBuscar] = useState<string>('')
+  const [dataUsuarios, setDataUsuarios] = useState<ITblUsuario[]>([])
+  const [dataCategorias, setDataCategorias] = useState<ITblCategorias[]>([])
+  const [dataEstados, setDataEstados] = useState<ITblEstados[]>([])
 
   const requestSearch = (texto: string) => {
     setBuscar(texto)
@@ -295,9 +295,24 @@ export const CardTablaAllTickets = ({
     setListDatos(FilasFiltradas)
   }
 
-  const cargarDatos = () => {
+  const cargarDatos = async () => {
     try {
       setCargando(true)
+      const consultasApi = [
+        { name: 'Lista de Categorias', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoCategoriasTickets') },
+        { name: 'Lista de Estados', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoEstadosTickets') },
+        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') }
+      ]
+
+      const results = await Promise.allSettled(consultasApi.map(req => req.promise))
+
+      const ListaCategorias = results[0].status === 'fulfilled' ? results[0].value?.data : []
+      const ListaEstados = results[1].status === 'fulfilled' ? results[1].value?.data : []
+      const ListaUsuarios = results[2].status === 'fulfilled' ? results[2].value?.data : []
+
+      setDataCategorias(ListaCategorias.Data ?? [])
+      setDataEstados(ListaEstados.Data ?? [])
+      setDataUsuarios(ListaUsuarios.Data ?? [])
       setListDatosOrigen(listaDatosTickets)
       setListDatos(listaDatosTickets)
     } catch (error) {
@@ -311,12 +326,11 @@ export const CardTablaAllTickets = ({
   }
 
   useEffect(() => {
-    if (listaDatosTickets.length > 0 && listaDatosUsuarios.length > 0) {
-      cargarDatos()
-    } else {
-      setCargando(false)
+    const inicializar = async () => {
+      await cargarDatos()
     }
-  }, [listaDatosTickets, listaDatosUsuarios])
+    inicializar()
+  }, [listaDatosTickets])
 
   return (
     <Card sx={{ mb: 5, position: 'relative' }}>
@@ -325,9 +339,9 @@ export const CardTablaAllTickets = ({
         title={`Historial de Tickets`}
         action={
           <ModalAgregarTicket
-            listaDatosUsuarios={listaDatosUsuarios}
-            listaDatosCategorias={listaDatosCategorias}
-            listaDatosEstados={listaDatosEstados}
+            listaDatosUsuarios={dataUsuarios}
+            listaDatosCategorias={dataCategorias}
+            listaDatosEstados={dataEstados}
           />
         }
       />
@@ -349,7 +363,7 @@ export const CardTablaAllTickets = ({
                 rowsPerPageOptions={[5, 10, 20, 50]}
                 localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                 pagination
-                getRowId={row => row.TickId}
+                getRowId={row => row.CorrelativeId}
                 components={{ Toolbar: ToolBarBasePremium }}
                 componentsProps={{
                   toolbar: {

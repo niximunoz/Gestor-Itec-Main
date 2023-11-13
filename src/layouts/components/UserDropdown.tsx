@@ -25,6 +25,7 @@ import { useAuth } from 'src/hooks/useAuth'
 import { Settings } from 'src/@core/context/settingsContext'
 import { CogOutline } from 'mdi-material-ui'
 import Link from 'next/link'
+import { encryptText } from 'src/helpers'
 
 interface Props {
   settings: Settings
@@ -147,7 +148,7 @@ const UserDropdown = (props: Props) => {
         </Box>
         <Divider sx={{ mt: 0, mb: 1 }} />
         <MenuItem sx={{ p: 0 }}>
-          <Link href={`/administracion/perfil/${userId}`} passHref>
+          <Link href={`/administracion/perfil/${encryptText(userId.toString()) }`} passHref>
           <a >
             <Box sx={styles}>
             <AccountOutline sx={{ marginRight: 2 }} />
@@ -155,12 +156,6 @@ const UserDropdown = (props: Props) => {
           </Box>
           </a>
         </Link>
-        </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/configuracion')}>
-          <Box sx={styles}>
-            <CogOutline sx={{ mr: 2 }} />
-            Configuración
-          </Box>
         </MenuItem>
         <Divider />
         <MenuItem sx={{ py: 2 }} onClick={handleLogout}>

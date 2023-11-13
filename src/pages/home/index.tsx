@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Grid } from '@mui/material'
+import { Grid } from '@mui/material'
 import Head from 'next/head'
-import { ITblTicket, ITblUsuario } from 'src/interfaces'
+import { ITblUsuario } from 'src/interfaces'
 import { instanceMiddlewareApi } from 'src/axios'
 import { encryptText } from 'src/helpers'
 

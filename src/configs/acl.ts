@@ -18,17 +18,21 @@ export type ACLObj = {
  */
 const defineRulesFor = (role: string, subject: string) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
+  const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
 
-  can('manage', 'ADM')
+  // can('manage', 'ADM')
 
-  if (role === 'admin') {
+  if (rolUsuario === 'admin') {
     can('manage', 'ADM')
-  } else if (role === 'client') {
-    can(['read'], 'acl-page')
-  } else {
-    // can(['read', 'create', 'update', 'delete'], subject)
-    can('manage', 'ADM')
+  } else if (rolUsuario === 'cliente') {
+    can('manage', 'CLI')
+  } else if (rolUsuario === 'trabajador') {
+    can('manage', 'TRA')
+  }else{
+    can('manage','home')
   }
+
+  // can('manage','home')
 
   return rules
 }
