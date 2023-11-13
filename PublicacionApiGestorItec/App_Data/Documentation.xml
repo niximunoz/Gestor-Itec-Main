@@ -374,6 +374,13 @@
             <param name="rutConsulta"></param>
             <returns></returns>
         </member>
+        <member name="M:ItecGroup.Api.Controllers.UsuariosController.PostActualizarPwdUser(ItecGroup.Applications.DTO.Password.ChangePasswordDto)">
+            <summary>
+            Permite Actualizar la contraseña del usuario
+            </summary>
+            <param name="infoPwd"></param>
+            <returns></returns>
+        </member>
         <member name="T:ItecGroup.Api.Core.WebApiApplication">
             <summary>
             
