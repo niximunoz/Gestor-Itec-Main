@@ -10,7 +10,6 @@ import CardGraficos from 'src/components/gestor-itec/graficos/CardGraficos'
 import { useAuth } from 'src/hooks/useAuth'
 import CardBarras from 'src/components/gestor-itec/graficos/CardBarras'
 import CardIndicadores from 'src/components/gestor-itec/graficos/CardIndicadores'
-import CardBarraV from 'src/components/gestor-itec/graficos/CardBarraV'
 
 
 export const Home = () => {
@@ -25,6 +24,9 @@ export const Home = () => {
   const [cantidadTicketsRRHH, setCantidadTicketsRRHH] = useState<number>(0)
   const [cantidadTicketsRedes, setCantidadTicketsRedes] = useState<number>(0)
 
+  //general
+  const [cantidadTicketsAsignados, setCantidadTicketsAsignados] = useState<number>(0)
+  const [cantidadTicketsNoAsignados, setCantidadTicketsNoAsignados] = useState<number>(0)
 
   const cargarGraficas = async () => {
     try {
@@ -39,17 +41,26 @@ export const Home = () => {
             IdConsulta: encryptText(usuarioActual.UsuRut.toString())
           }
         )
+        //general
+        const { data: CountTicketsAll } = await instanceMiddlewareApi.get(
+          `/Parametros/ObtenerCountTicketsGeneral`
+        )
 
-
+        //Cantidad por estado rut
         setCantidadTicketsAsigAbiertos(CountTicketsGeneralByRutUsuario.Data.CantidadAbiertos ?? 0)
         setCantidadTicketsAsigCerrados(CountTicketsGeneralByRutUsuario.Data.CantidadCerrados ?? 0)
         setCantidadTicketsAsigEnProceso(CountTicketsGeneralByRutUsuario.Data.CantidadEnProceso ?? 0)
 
-        
-        //Cantidad por Área
+
+        //Cantidad por Área rut
         setCantidadTicketsInformatica(CountTicketsGeneralByRutUsuario.Data.CantidadInformatica ?? 0)
         setCantidadTicketsRRHH(CountTicketsGeneralByRutUsuario.Data.CantidadRecursosHumanos ?? 0)
         setCantidadTicketsRedes(CountTicketsGeneralByRutUsuario.Data.CantidadRedes ?? 0)
+
+        //general ticket asignados/no asignados
+        setCantidadTicketsAsignados(CountTicketsAll.Data.CantidadEnProceso ?? 0)
+        setCantidadTicketsNoAsignados(CountTicketsAll.Data.CantidadAbiertos ?? 0)
+
       }
     } catch (error) {
       console.error(error)
@@ -58,12 +69,14 @@ export const Home = () => {
     }
   }
   const datosEstado = {
-    'nombre' : ['Abiertos','Cerrados', 'En proceso'],
-    'cantidad' : [cantidadTicketsAsigAbiertos,cantidadTicketsAsigCerrados, cantidadTicketsAsigEnProceso]
+    'titulo': 'Estado de Ticket',
+    'nombre': ['Abiertos', 'Cerrados', 'En proceso'],
+    'cantidad': [cantidadTicketsAsigAbiertos, cantidadTicketsAsigCerrados, cantidadTicketsAsigEnProceso]
   }
   const datosArea = {
-    'nombre' : ['Informática','RRHH', 'Redes'],
-    'cantidad' : [cantidadTicketsInformatica,cantidadTicketsRRHH, cantidadTicketsRedes]
+    'titulo': 'Área Asignada',
+    'nombre': ['Informática', 'RRHH', 'Redes'],
+    'cantidad': [cantidadTicketsInformatica, cantidadTicketsRRHH, cantidadTicketsRedes]
   }
 
 
@@ -88,29 +101,15 @@ export const Home = () => {
 
       <CardIndicadores />
 
-      <Grid container spacing={5}>
+      <Grid container spacing={5} sx={{ mb: 5, height: 400 }}>
         <Grid item xs={12} sm={6}>
-          <CardGraficos datosGrafico={datosEstado}/>
+          <CardGraficos datosGrafico={datosEstado} />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <CardBarraV datosGrafico={datosEstado} />
-        </Grid>
-      </Grid>
-      <Grid container spacing={5}>
-        <Grid item xs={12} sm={6}>
-          <CardGraficos datosGrafico={datosArea}/>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <CardBarraV datosGrafico={datosArea} />
+          <CardGraficos datosGrafico={datosArea} />
         </Grid>
       </Grid>
-
-      <>
-
-
-      </>
-
-      <CardBarras asignado={cantidadTicketsAsigEnProceso} noasignado={cantidadTicketsAsigAbiertos} />
+      <CardBarras asignado={cantidadTicketsAsignados} noasignado={cantidadTicketsNoAsignados} />
 
     </>
 

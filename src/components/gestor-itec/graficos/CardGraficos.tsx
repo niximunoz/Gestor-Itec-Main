@@ -2,14 +2,15 @@
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-
-// ** Third Party Imports
 import { ApexOptions } from 'apexcharts'
-
-// ** Component Import
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
-import { Dictionary } from '@reduxjs/toolkit'
-import { ListClasses } from '@mui/material'
+import { Grid } from '@mui/material'
+import { Bar } from 'react-chartjs-2'
+import { useTheme } from '@mui/material/styles'
+import 'chart.js/auto'
+import 'react-datepicker/dist/react-datepicker.css'
+export type DateType = Date | null | undefined
+
 
 const donutColors = {
   series1: '#00d4bd',
@@ -21,6 +22,7 @@ const donutColors = {
 
 interface Props {
   datosGrafico: {
+    titulo: string;
     nombre: string[];
     cantidad: number[];
   };
@@ -31,6 +33,7 @@ interface Props {
 const CardGraficos = ({ datosGrafico }: Props) => {
   const nombre = datosGrafico['nombre'];
   const cantidad = datosGrafico['cantidad'];
+  const titulo = datosGrafico['titulo'];
 
 
   const options: ApexOptions = {
@@ -68,7 +71,7 @@ const CardGraficos = ({ datosGrafico }: Props) => {
               fontSize: '1.5rem',
               label: 'Total',
               formatter() {
-                return '%'
+                return '100%'
               }
             }
           }
@@ -115,16 +118,61 @@ const CardGraficos = ({ datosGrafico }: Props) => {
       }
     ]
   }
-
   const series = cantidad
+  //grafico de barras
+  const theme = useTheme()
+  const borderColor = theme.palette.action.focus
+  const gridLineColor = theme.palette.action.focus
+  const labelColor = theme.palette.text.primary
+
+  const optionsb = {
+    responsive: true,
+    height: '400px',
+    maintainAspectRatio: true,
+    animation: { duration: 500 },
+    scales: {
+      x: {
+        grid: {
+          borderColor,
+          color: gridLineColor
+        },
+        ticks: { color: labelColor }
+      },
+      y: {
+        min: 0,
+        grid: {
+          borderColor,
+          color: gridLineColor
+        },
+        ticks: {
+          stepSize: 10,
+          color: labelColor
+        }
+      }
+    },
+    plugins: {
+      legend: { display: false }
+    }
+  }
+
+  const data = {
+    labels: nombre,
+    datasets: [
+      {
+        maxBarThickness: 20,
+        backgroundColor: ['#00d4bd','#fdd835', '#6495ed'],
+        borderColor: 'transparent',
+        borderRadius: { topRight: 15, topLeft: 15 },
+        data: cantidad
+      }
+    ]
+  }
 
   return (
-    <Card sx={{ mb: 5, position: 'relative'}} >
+    <Card sx={{ mb: 5, height: 380 }} >
       <CardHeader
-        title='Estado de Tickets'
+        title={titulo}
         titleTypographyProps={{ variant: 'h6' }}
-        subheader='visualización del estado de los tickets'
-        subheaderTypographyProps={{ variant: 'caption', sx: { color: 'text.disabled' } }}
       />
       <CardContent
         sx={{
@@ -132,10 +180,18 @@ const CardGraficos = ({ datosGrafico }: Props) => {
             { fontSize: '1.2rem' }
         }}
       >
-        <ReactApexcharts options={options} series={series} type='donut' height={400} />
+        <Grid container spacing={5} >
+          <Grid item xs={12} sm={6}>
+            <ReactApexcharts options={options} series={series} type='donut' height={400} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Bar data={data} options={optionsb} height={340} />
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   )
 }
 
 export default CardGraficos
+
