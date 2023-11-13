@@ -1,31 +1,83 @@
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-stats-horizontal'
-import { AttachMoney, Euro, LocalAtm, Archive, Person } from '@mui/icons-material'
-import { Box } from '@mui/material'
-import UserSpinner from 'src/layouts/components/UserSpinner'
+import { Box, Grid } from '@mui/material'
 import Head from 'next/head'
+import { ITblTicket, ITblUsuario } from 'src/interfaces'
+import { instanceMiddlewareApi } from 'src/axios'
+import { encryptText } from 'src/helpers'
 
-const Home = () => {
-  const dataApi: any[] = []
-  const [indicadores, setIndicadores] = useState<any[]>([])
 
-  const getInfoIndicadores = async () => {
+import CardGraficos from 'src/components/gestor-itec/graficos/CardGraficos'
+import { useAuth } from 'src/hooks/useAuth'
+import CardBarras from 'src/components/gestor-itec/graficos/CardBarras'
+import CardIndicadores from 'src/components/gestor-itec/graficos/CardIndicadores'
+import CardBarraV from 'src/components/gestor-itec/graficos/CardBarraV'
+
+
+export const Home = () => {
+  const auth = useAuth()
+  const [cargando, setCargando] = useState<boolean>(false)
+  // Cantidad por estado
+  const [cantidadTicketsAsigAbiertos, setCantidadTicketsAsigAbiertos] = useState<number>(0)
+  const [cantidadTicketsAsigCerrados, setCantidadTicketsAsigCerrados] = useState<number>(0)
+  const [cantidadTicketsAsigEnProceso, setCantidadTicketsAsigEnProceso] = useState<number>(0)
+  //Cantidad por Área
+  const [cantidadTicketsInformatica, setCantidadTicketsInformatica] = useState<number>(0)
+  const [cantidadTicketsRRHH, setCantidadTicketsRRHH] = useState<number>(0)
+  const [cantidadTicketsRedes, setCantidadTicketsRedes] = useState<number>(0)
+
+
+  const cargarGraficas = async () => {
     try {
-      const { data: Res } = await axios.get('https://mindicador.cl/api')
+      setCargando(true)
+      const { data: infoUsuario } = await instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios')
+      if (infoUsuario.Data) {
+        const usuarioActual = infoUsuario.Data.find((x: ITblUsuario) => x.UsuId == auth.user?.id)
 
-      if (Res) {
-        dataApi.push(Res.dolar, Res.euro, Res.uf, Res.ipc, Res.utm)
-        setIndicadores(dataApi)
+        const { data: CountTicketsGeneralByRutUsuario } = await instanceMiddlewareApi.post(
+          `/Parametros/ObtenerCountTicketsGeneralByRutUsuario`,
+          {
+            IdConsulta: encryptText(usuarioActual.UsuRut.toString())
+          }
+        )
+
+
+        setCantidadTicketsAsigAbiertos(CountTicketsGeneralByRutUsuario.Data.CantidadAbiertos ?? 0)
+        setCantidadTicketsAsigCerrados(CountTicketsGeneralByRutUsuario.Data.CantidadCerrados ?? 0)
+        setCantidadTicketsAsigEnProceso(CountTicketsGeneralByRutUsuario.Data.CantidadEnProceso ?? 0)
+
+        
+        //Cantidad por Área
+        setCantidadTicketsInformatica(CountTicketsGeneralByRutUsuario.Data.CantidadInformatica ?? 0)
+        setCantidadTicketsRRHH(CountTicketsGeneralByRutUsuario.Data.CantidadRecursosHumanos ?? 0)
+        setCantidadTicketsRedes(CountTicketsGeneralByRutUsuario.Data.CantidadRedes ?? 0)
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
+    } finally {
+      setCargando(false)
     }
   }
+  const datosEstado = {
+    'nombre' : ['Abiertos','Cerrados', 'En proceso'],
+    'cantidad' : [cantidadTicketsAsigAbiertos,cantidadTicketsAsigCerrados, cantidadTicketsAsigEnProceso]
+  }
+  const datosArea = {
+    'nombre' : ['Informática','RRHH', 'Redes'],
+    'cantidad' : [cantidadTicketsInformatica,cantidadTicketsRRHH, cantidadTicketsRedes]
+  }
+
+
 
   useEffect(() => {
-    getInfoIndicadores()
+
+    const inicializar = async () => {
+      await cargarGraficas().then(() => {
+      })
+    }
+
+    inicializar()
   }, [])
+
 
   return (
     <>
@@ -33,38 +85,36 @@ const Home = () => {
         <title>Home</title>
         <meta name='description' content='Home' />
       </Head>
-      {indicadores ? (
-        indicadores.map((x, idx) => {
-          const date = x.fecha.split('T')[0].split('-')
 
-          return (
-            <Box sx={{ marginTop: 2, display: 'flex', justifyContent: 'end' }} key={idx}>
-              <CardStatisticsHorizontal
-                key={x.codigo}
-                stats={x.valor}
-                title={x.nombre}
-                icon={
-                  x.codigo == 'dolar' ? (
-                    <AttachMoney />
-                  ) : x.codigo == 'euro' ? (
-                    <Euro />
-                  ) : x.codigo == 'ipc' ? (
-                    <Person />
-                  ) : x.codigo == 'uf' ? (
-                    <LocalAtm />
-                  ) : x.codigo == 'utm' ? (
-                    <Archive />
-                  ) : null
-                }
-                trendNumber={`${date[2]}-${date[1]}-${date[0]}`}
-              />
-            </Box>
-          )
-        })
-      ) : (
-        <UserSpinner />
-      )}
+      <CardIndicadores />
+
+      <Grid container spacing={5}>
+        <Grid item xs={12} sm={6}>
+          <CardGraficos datosGrafico={datosEstado}/>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <CardBarraV datosGrafico={datosEstado} />
+        </Grid>
+      </Grid>
+      <Grid container spacing={5}>
+        <Grid item xs={12} sm={6}>
+          <CardGraficos datosGrafico={datosArea}/>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <CardBarraV datosGrafico={datosArea} />
+        </Grid>
+      </Grid>
+
+      <>
+
+
+      </>
+
+      <CardBarras asignado={cantidadTicketsAsigEnProceso} noasignado={cantidadTicketsAsigAbiertos} />
+
     </>
+
+
   )
 }
 
@@ -74,3 +124,4 @@ Home.acl = {
 }
 
 export default Home
+
