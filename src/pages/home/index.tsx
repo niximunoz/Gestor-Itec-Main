@@ -5,12 +5,10 @@ import { ITblUsuario } from 'src/interfaces'
 import { instanceMiddlewareApi } from 'src/axios'
 import { encryptText } from 'src/helpers'
 
-
 import CardGraficos from 'src/components/gestor-itec/graficos/CardGraficos'
 import { useAuth } from 'src/hooks/useAuth'
 import CardBarras from 'src/components/gestor-itec/graficos/CardBarras'
 import CardIndicadores from 'src/components/gestor-itec/graficos/CardIndicadores'
-
 
 export const Home = () => {
   const auth = useAuth()
@@ -42,15 +40,12 @@ export const Home = () => {
           }
         )
         //general
-        const { data: CountTicketsAll } = await instanceMiddlewareApi.get(
-          `/Parametros/ObtenerCountTicketsGeneral`
-        )
+        const { data: CountTicketsAll } = await instanceMiddlewareApi.get(`/Parametros/ObtenerCountTicketsGeneral`)
 
         //Cantidad por estado rut
         setCantidadTicketsAsigAbiertos(CountTicketsGeneralByRutUsuario.Data.CantidadAbiertos ?? 0)
         setCantidadTicketsAsigCerrados(CountTicketsGeneralByRutUsuario.Data.CantidadCerrados ?? 0)
         setCantidadTicketsAsigEnProceso(CountTicketsGeneralByRutUsuario.Data.CantidadEnProceso ?? 0)
-
 
         //Cantidad por Área rut
         setCantidadTicketsInformatica(CountTicketsGeneralByRutUsuario.Data.CantidadInformatica ?? 0)
@@ -60,7 +55,6 @@ export const Home = () => {
         //general ticket asignados/no asignados
         setCantidadTicketsAsignados(CountTicketsAll.Data.CantidadEnProceso ?? 0)
         setCantidadTicketsNoAsignados(CountTicketsAll.Data.CantidadAbiertos ?? 0)
-
       }
     } catch (error) {
       console.error(error)
@@ -69,28 +63,23 @@ export const Home = () => {
     }
   }
   const datosEstado = {
-    'titulo': 'Estado de Ticket',
-    'nombre': ['Abiertos', 'Cerrados', 'En proceso'],
-    'cantidad': [cantidadTicketsAsigAbiertos, cantidadTicketsAsigCerrados, cantidadTicketsAsigEnProceso]
+    titulo: 'Estado de Ticket',
+    nombre: ['Abiertos', 'Cerrados', 'En proceso'],
+    cantidad: [cantidadTicketsAsigAbiertos, cantidadTicketsAsigCerrados, cantidadTicketsAsigEnProceso]
   }
   const datosArea = {
-    'titulo': 'Área Asignada',
-    'nombre': ['Informática', 'RRHH', 'Redes'],
-    'cantidad': [cantidadTicketsInformatica, cantidadTicketsRRHH, cantidadTicketsRedes]
+    titulo: 'Área Asignada',
+    nombre: ['Informática', 'RRHH', 'Redes'],
+    cantidad: [cantidadTicketsInformatica, cantidadTicketsRRHH, cantidadTicketsRedes]
   }
 
-
-
   useEffect(() => {
-
     const inicializar = async () => {
-      await cargarGraficas().then(() => {
-      })
+      await cargarGraficas().then(() => {})
     }
 
     inicializar()
   }, [])
-
 
   return (
     <>
@@ -101,19 +90,18 @@ export const Home = () => {
 
       <CardIndicadores />
 
-      <Grid container spacing={5} sx={{ mb: 5, height: 400 }}>
+      <Grid container spacing={5}>
         <Grid item xs={12} sm={6}>
           <CardGraficos datosGrafico={datosEstado} />
         </Grid>
         <Grid item xs={12} sm={6}>
           <CardGraficos datosGrafico={datosArea} />
         </Grid>
+        <Grid item xs={12} sm={12}>
+          <CardBarras asignado={cantidadTicketsAsignados} noasignado={cantidadTicketsNoAsignados} />
+        </Grid>
       </Grid>
-      <CardBarras asignado={cantidadTicketsAsignados} noasignado={cantidadTicketsNoAsignados} />
-
     </>
-
-
   )
 }
 
@@ -123,4 +111,3 @@ Home.acl = {
 }
 
 export default Home
-

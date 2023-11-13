@@ -169,13 +169,14 @@ const CardGraficos = ({ datosGrafico }: Props) => {
   }
 
   return (
-    <Card sx={{ mb: 5, height: 380 }} >
+    <Card sx={{ mb: 5, position: 'relative' }}>
       <CardHeader
         title={titulo}
         titleTypographyProps={{ variant: 'h6' }}
       />
       <CardContent
         sx={{
+          pt: theme => `${theme.spacing(2.5)} !important`,
           '& .apexcharts-canvas .apexcharts-pie .apexcharts-datalabel-label, & .apexcharts-canvas .apexcharts-pie .apexcharts-datalabel-value':
             { fontSize: '1.2rem' }
         }}

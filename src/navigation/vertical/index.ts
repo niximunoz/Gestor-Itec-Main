@@ -11,7 +11,7 @@ const MenuTickets = () => {
   const auth = useAuth()
   const [areas, setAreas] = useState<NavLink[]>([])
   const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
-  const listadoMenu = rolUsuario === 'admin' ? [1] : []
+  const listadoMenu = rolUsuario === 'admin' ? [1,2,3] : []
 
   useEffect(() => {
     let isMounted = true
