@@ -1,88 +1,238 @@
 // ** Icon imports
-import {
-  HomeOutline,
+import { HomeOutline, AccountGroupOutline } from 'mdi-material-ui'
+import TimelineIcon from '@mui/icons-material/Timeline'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import QueryStatsIcon from '@mui/icons-material/QueryStats'
+import { NavGroup, NavLink, VerticalNavItemsType } from 'src/@core/layouts/types'
+import { useEffect, useState } from 'react'
+import { useAuth } from 'src/hooks/useAuth'
 
-  FileDocumentMultiple,
-  AccountGroupOutline
-} from 'mdi-material-ui';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import { VerticalNavItemsType } from 'src/@core/layouts/types'
+const MenuTickets = () => {
+  const auth = useAuth()
+  const [areas, setAreas] = useState<NavLink[]>([])
+  const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
+  const listadoMenu = rolUsuario === 'admin' ? [1] : []
+
+  useEffect(() => {
+    let isMounted = true
+
+    const getAreas = async () => {
+      try {
+        const list = listadoMenu
+        const access = [] as NavLink[]
+        const added = [] as number[]
+
+        let name, url
+
+        for (const area of list) {
+          if (added.includes(area)) {
+            continue
+          }
+
+          switch (area) {
+            case 1:
+              name = 'Ver Todos'
+              url = '/gestor-itec/resumen-tickets/all-tickets'
+
+              break
+
+            case 2:
+              name = 'Asignados'
+              url = '/gestor-itec/resumen-tickets/tickets-asignados'
+
+              break
+
+            case 3:
+              name = 'Área Tickets'
+              url = '/gestor-itec/resumen-tickets/tickets-areas'
+
+              break
+
+            default:
+              continue
+          }
+
+          added.push(area)
+
+          access.push({
+            action: 'read',
+            subject: 'ADM',
+            title: name,
+            path: url
+          })
+        }
+
+        setAreas(access)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    if (isMounted) {
+      getAreas()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [auth])
+
+  return areas
+}
+
+const MenuMantenedores = () => {
+  const auth = useAuth()
+  const [areas, setAreas] = useState<NavLink[]>([])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const getAreas = async () => {
+      try {
+        const list = [1, 2, 3]
+        const access = [] as NavLink[]
+        const added = [] as number[]
+
+        let name, url
+
+        for (const area of list) {
+          if (added.includes(area)) {
+            continue
+          }
+
+          switch (area) {
+            case 1:
+              name = 'Tablas Basicas'
+              url = '/gestor-itec/mantenedores/tablas-basicas'
+
+              break
+
+            case 2:
+              name = 'Usuarios'
+              url = '/gestor-itec/mantenedores/usuarios'
+
+              break
+
+            default:
+              continue
+          }
+
+          added.push(area)
+
+          access.push({
+            action: 'read',
+            subject: 'ADM',
+            title: name,
+            path: url
+          })
+        }
+
+        setAreas(access)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    if (isMounted) {
+      getAreas()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [auth])
+
+  return areas
+}
+
+const MenuReportes = () => {
+  const auth = useAuth()
+  const [areas, setAreas] = useState<NavLink[]>([])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const getAreas = async () => {
+      try {
+        const list = [1, 2, 3]
+        const access = [] as NavLink[]
+        const added = [] as number[]
+
+        let name, url
+
+        for (const area of list) {
+          if (added.includes(area)) {
+            continue
+          }
+
+          switch (area) {
+            case 1:
+              name = 'Tickets'
+              url = '/gestor-itec/reportes'
+
+              break
+
+            default:
+              continue
+          }
+
+          added.push(area)
+
+          access.push({
+            action: 'read',
+            subject: 'ADM',
+            title: name,
+            path: url
+          })
+        }
+
+        setAreas(access)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    if (isMounted) {
+      getAreas()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [auth])
+
+  return areas
+}
 
 const navigation = (): VerticalNavItemsType => {
   return [
     {
-      action: 'read',
-      subject: 'ADM',
-      title: 'Home',
+      title: 'Inicio',
       icon: HomeOutline,
-      path: '/home'
+      path: '/home',
+      subject: 'ADM',
+      action: 'read'
     },
     {
       action: 'read',
       subject: 'ADM',
       title: 'Tickets',
       icon: AssignmentIcon,
-      children: [
-        {
-          action: 'read',
-          subject: 'ADM',
-          title: 'Ver Todos',
-          path: '/gestor-itec/resumen-tickets/all-tickets'
-        },
-        {
-          action: 'read',
-          subject: 'ADM',
-          title: 'Asignados',
-          path: '/gestor-itec/resumen-tickets/tickets-asignados'
-        },
-        {
-          action: 'read',
-          subject: 'ADM',
-          title: 'Área Tickets',
-          path: '/gestor-itec/resumen-tickets/tickets-areas'
-        }
-      ]
-    },
-    {
-      title: 'Reportes',
-      icon: TimelineIcon,
-      children: [
-        {
-          title: 'Tickets',
-          action: 'read',
-          subject: 'ADM',
-          path: '/gestor-itec/reportes'
-        }
-      ]
+      children: MenuTickets()
     },
     {
       title: 'Mantenedores',
       icon: HomeOutline,
-      children: [
-        {
-          action: 'read',
-          subject: 'ADM',
-          title: 'Tablas Basicas',
-          icon: AccountGroupOutline,
-          path: '/gestor-itec/mantenedores/tablas-basicas'
-        },
-        {
-          action: 'read',
-          subject: 'ADM',
-          title: 'Usuarios',
-          icon: AccountGroupOutline,
-          path: '/gestor-itec/mantenedores/usuarios'
-        }
-      ]
-    },
-    {
       action: 'read',
       subject: 'ADM',
-      icon: QueryStatsIcon,
-      path: '/gestor-itec/analiticas',
-      title: 'Estadísticas'
+      children: MenuMantenedores()
+    },
+    {
+      title: 'Reportes',
+      icon: TimelineIcon,
+      action: 'read',
+      subject: 'ADM',
+      children: MenuReportes()
     }
   ]
 }

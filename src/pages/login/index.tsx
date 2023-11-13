@@ -318,7 +318,7 @@ const LoginPage = () => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <Box
+                {/* <Box
                   sx={{
                     mb: 4,
                     display: 'flex',
@@ -332,7 +332,7 @@ const LoginPage = () => {
                       Recuperar contraseña?
                     </Typography>
                   </Link>
-                </Box>
+                </Box> */}
 
                 <Button
                   fullWidth

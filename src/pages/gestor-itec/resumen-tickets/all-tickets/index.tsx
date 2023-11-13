@@ -2,24 +2,18 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { instanceMiddlewareApi } from 'src/axios'
 import { CardTablaAllTickets } from 'src/components/gestor-itec/recepcion-tickets/CardTablaAllTickets'
-import { useParams } from 'src/hooks/useParams'
-import { ITblCategorias, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
+import { ITblTicket } from 'src/interfaces'
 import UserSpinner from 'src/layouts/components/UserSpinner'
 
 const Index = () => {
   const [cargando, setCargando] = useState<boolean>(true)
   const [dataTickets, setDataTickets] = useState<ITblTicket[]>([])
-  const [dataUsuarios, setDataUsuarios] = useState<ITblUsuario[]>([])
-  const [dataCategorias, setDataCategorias] = useState<ITblCategorias[]>([])
-  const [dataEstados, setDataEstados] = useState<ITblEstados[]>([])
-  const paramsUse = useParams()
 
   const cargarDatos = async () => {
     setCargando(true)
     try {
       const consultasApi = [
-        { name: 'Lista de Tickets', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoTickets') },
-        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') }
+        { name: 'Lista de Tickets', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoTickets') }
       ]
 
       const results = await Promise.allSettled(consultasApi.map(req => req.promise))
@@ -31,12 +25,8 @@ const Index = () => {
       })
 
       const ListaTickets = results[0].status === 'fulfilled' ? results[0].value?.data : []
-      const ListaUsuarios = results[1].status === 'fulfilled' ? results[1].value?.data : []
 
       setDataTickets(ListaTickets.Data)
-      setDataUsuarios(ListaUsuarios.Data)
-      setDataCategorias(paramsUse.listadoCategorias ?? [])
-      setDataEstados(paramsUse.listadoEstados ?? [])
     } catch (error) {
       console.error('Descripción error:', error)
       setCargando(false)
@@ -67,9 +57,6 @@ const Index = () => {
       ) : (
         <CardTablaAllTickets 
           listaDatosTickets={dataTickets}
-          listaDatosUsuarios={dataUsuarios}
-          listaDatosCategorias={dataCategorias}
-          listaDatosEstados={dataEstados}
         />
       )}
     

@@ -42,7 +42,7 @@ interface IFormInputs {
   Titulo: string
   Categoria: string
   Descripción: string
-  IdUserAsignado: number | null
+  RutUsuarioAsignado: number | null
   IdEstado: number | null
 }
 
@@ -80,8 +80,10 @@ export const ModalAgregarTicket = ({
   const cerrarModal = () => {
     resetTicket()
     setAbrir(false)
-    setCategoriaTicket(null)
     setCargando(false)
+    setCategoriaTicket(null)
+    setEstadoTicket(null)
+    setUserAsignadoTicket(null)
   }
 
   const guardarDatos = async (data: IFormInputs) => {
@@ -97,8 +99,8 @@ export const ModalAgregarTicket = ({
           TickDescripcion : data.Descripción,
           EstadoId : estadoTicket?.EstadoId,
           FechaCreacion : new Date(),
-          UserAsignadoId: userAsignadoTicket?.UsuId,
-          FechaAsignacion: new Date(),
+          UserAsignadoRut: userAsignadoTicket?.UsuRut ?? null,
+          FechaAsignacion: userAsignadoTicket != null ? new Date() : null,
           Activo : true
         }
 
@@ -141,7 +143,6 @@ export const ModalAgregarTicket = ({
   const handleChangeCategoriaTicket = (data: any) => {
     setCategoriaTicket(data)
     setValueTicket('Categoria', data.CatId)
-    console.log(encryptText('1'))
   }
 
   const handleChangeEstadoTicket = (data: any) => {

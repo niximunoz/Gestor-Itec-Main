@@ -78,7 +78,7 @@ const CtrlModalAgregarUsuario = ({ recargar }: Props) => {
         Activo: data.Activo
       }
 
-      const {data : infoUsuario} = await instanceMiddlewareApi.post('/Usuarios/AgregarUsuario/', newUsuario)
+      const {data : infoUsuario} = await instanceMiddlewareApi.post('/Usuarios/AgregarUsuarioMasCorreo/', newUsuario)
 
       if (infoUsuario.Data && infoUsuario.Information.StatusCode == 200) {
         await Swal.fire({
