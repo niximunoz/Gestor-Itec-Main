@@ -113,6 +113,7 @@ const HorizontalLayout = (props: LayoutProps) => {
             }}
           >
             <AppBarContent {...props} hidden={hidden} settings={settings} saveSettings={saveSettings} />
+           
           </Toolbar>
         </Box>
 

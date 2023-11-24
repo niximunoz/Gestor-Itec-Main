@@ -1,4 +1,4 @@
-import { Add, Close, Save } from '@mui/icons-material'
+import { Add, Block, BlockOutlined, Close, Save } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -21,6 +21,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import UserSpinner from 'src/layouts/components/UserSpinner'
 import Swal from 'sweetalert2'
 import { instanceMiddlewareApi } from 'src/axios'
+import { ITblTicket } from 'src/interfaces'
 
 const Transition = forwardRef(function Transition(
   props: FadeProps & { children?: ReactElement<any, any> },
@@ -40,11 +41,13 @@ interface IFormInputs {
 type Props = {
   idTicketAbierto: number | null
   recargar: () => Promise<void>
+  infoTicket: ITblTicket | null
 }
 
-export const ModalAgregarDetalleTicket = ({
+export const ModalCerrarTicket = ({
   idTicketAbierto,
-  recargar
+  recargar,
+  infoTicket
 }: Props) => {
   const {
     handleSubmit,
@@ -57,11 +60,13 @@ export const ModalAgregarDetalleTicket = ({
 
   const [cargando, setCargando] = useState(false)
   const [abrir, setAbrir] = useState<boolean>(false)
+  const [ticket, setTicket] = useState<ITblTicket | null>(null)
 
 
 
   const abrirModal = () => {
-    if (idTicketAbierto && idTicketAbierto > 0 && idTicketAbierto != null) {
+    if (idTicketAbierto && idTicketAbierto > 0 && idTicketAbierto != null && infoTicket) {
+      setTicket(infoTicket)
       setAbrir(true)
     } else {
       setAbrir(true)
@@ -80,35 +85,43 @@ export const ModalAgregarDetalleTicket = ({
       setCargando(true)
       if (idTicketAbierto != null && idTicketAbierto > 0) {
         const { id: idUser } = JSON.parse(window.localStorage.getItem('userData')!)
+        const { fullName: nombreUsuario } = JSON.parse(window.localStorage.getItem('userData')!)
 
         const newComentario = {
           TicketId: idTicketAbierto,
           UserCreaId: idUser,
-          DetalleTicketDescripcion: data.Descripción
+          DetalleTicketDescripcion: `*****Ticket cerrado por: ${nombreUsuario} *****\n Resolución: \n ${data.Descripción}`,
         }
+        if (ticket != null) {
+          const newTicket = {
+            ...ticket,
+            TickId: idTicketAbierto,
+            EstadoId: 3
+          }
 
-        const { data: dataDetalle } = await instanceMiddlewareApi.post(
-          `/Parametros/SaveDetalleTicket`, newComentario)
 
-        if (dataDetalle.Data != null) {
-          await Swal.fire({
-            title: 'Exito',
-            text: `Se agregó comentario a Ticket N°${idTicketAbierto}.`,
-            icon: 'success',
-            confirmButtonColor: '#0098aa',
-            confirmButtonText: 'Aceptar'
-          }).then((result: any) => {
-            if (result.isConfirmed) {
-              cerrarModal();
-              recargar()
-            }
-          })
+          const { data: dataTicket } = await instanceMiddlewareApi.post(`/Parametros/UpdateTicket`, newTicket)
+          const { data: dataDetalle } = await instanceMiddlewareApi.post(`/Parametros/SaveDetalleTicket`, newComentario)
+
+          if (dataDetalle.Data != null && dataTicket.Data != null) {
+            await Swal.fire({
+              title: 'Exito',
+              text: `El Ticket N°${idTicketAbierto} se cerró correctamente.`,
+              icon: 'success',
+              confirmButtonColor: '#0098aa',
+              confirmButtonText: 'Aceptar'
+            }).then((result: any) => {
+              if (result.isConfirmed) {
+                cerrarModal();
+                recargar()
+              }
+            })
+          }
         }
-
       } else {
         Swal.fire({
           title: 'Ocurrio un error',
-          text: `Error al comentar Ticket N°${idTicketAbierto}.`,
+          text: `No se pudo cerrar el Ticket N°${idTicketAbierto}.`,
           icon: 'error',
           confirmButtonColor: '#0098aa',
           confirmButtonText: 'Aceptar'
@@ -128,15 +141,8 @@ export const ModalAgregarDetalleTicket = ({
 
   return (
     <>
-      <Button
-        sx={{ mr: 2, mb: 2 }}
-        variant='outlined'
-        color='info'
-        startIcon={<Add />}
-        onClick={() => abrirModal()}
-        className='classBtnAgregarDetalleTicket'
-      >
-        Ingresar Comentario
+      <Button variant='outlined' sx={{ mr: 2 }} color='error' onClick={() => abrirModal()}>
+        <Close sx={{ mr: 1 }} /> Cerrar Ticket
       </Button>
 
       <Dialog
@@ -156,7 +162,7 @@ export const ModalAgregarDetalleTicket = ({
 
             <Box sx={{ mb: 8, textAlign: 'center' }}>
               <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
-                Ingresar Comentario
+                Ingresar resolución para cerrar ticket
               </Typography>
             </Box>
 
@@ -192,7 +198,7 @@ export const ModalAgregarDetalleTicket = ({
           </DialogContent>
           <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
             <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
-              <Save sx={{ mr: 1 }} /> Ingresar
+              <Save sx={{ mr: 1 }} /> Cerrar Ticket
             </Button>
             <Button variant='outlined' color='secondary' onClick={cerrarModal}>
               Cancelar

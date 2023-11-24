@@ -11,7 +11,7 @@ const MenuTickets = () => {
   const auth = useAuth()
   const [areas, setAreas] = useState<NavLink[]>([])
   const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
-  const listadoMenu = rolUsuario === 'admin' ? [1,2,3] : []
+  const listadoMenu = rolUsuario === 'admin' ? [1, 3] : rolUsuario === 'trabajador' ? [1,2,3] : [1,3]
 
   useEffect(() => {
     let isMounted = true
@@ -205,36 +205,60 @@ const MenuReportes = () => {
 }
 
 const navigation = (): VerticalNavItemsType => {
-  return [
-    {
-      title: 'Inicio',
-      icon: HomeOutline,
-      path: '/home',
-      subject: 'ADM',
-      action: 'read'
-    },
-    {
-      action: 'read',
-      subject: 'ADM',
-      title: 'Tickets',
-      icon: AssignmentIcon,
-      children: MenuTickets()
-    },
-    {
-      title: 'Mantenedores',
-      icon: HomeOutline,
-      action: 'read',
-      subject: 'ADM',
-      children: MenuMantenedores()
-    },
-    {
-      title: 'Reportes',
-      icon: TimelineIcon,
-      action: 'read',
-      subject: 'ADM',
-      children: MenuReportes()
-    }
-  ]
+  const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
+  if (rolUsuario == 'admin') {
+    return [
+      {
+        title: 'Inicio',
+        icon: HomeOutline,
+        path: '/home',
+        subject: 'ADM',
+        action: 'read'
+      },
+      {
+        action: 'read',
+        subject: 'ADM',
+        title: 'Tickets',
+        icon: AssignmentIcon,
+        children: MenuTickets()
+      }
+      ,
+      {
+        title: 'Mantenedores',
+        icon: HomeOutline,
+        action: 'read',
+        subject: 'ADM',
+        children: MenuMantenedores()
+      },
+      {
+        title: 'Reportes',
+        icon: TimelineIcon,
+        action: 'read',
+        subject: 'ADM',
+        children: MenuReportes()
+      }
+    ]
+  } else {
+    return [
+      {
+        title: 'Inicio',
+        icon: HomeOutline,
+        path: '/home',
+        subject: 'ADM',
+        action: 'read'
+      },
+      {
+        action: 'read',
+        subject: 'ADM',
+        title: 'Tickets',
+        icon: AssignmentIcon,
+        children: MenuTickets()
+      }
+    ]
+  }
+
+
+
 }
 
 export default navigation

@@ -44,9 +44,10 @@ interface IFormInputs {
 type Props = {
   idTicketSeleccionado: number
   listaDatosTickets: ITblTicket[]
+  recargar: () => Promise<void>
 }
 
-export const ModalAsignarResponsable = ({ listaDatosTickets, idTicketSeleccionado }: Props) => {
+export const ModalAsignarResponsable = ({ listaDatosTickets, idTicketSeleccionado, recargar}: Props) => {
   const {
     handleSubmit,
     control: controlTicket,
@@ -62,6 +63,7 @@ export const ModalAsignarResponsable = ({ listaDatosTickets, idTicketSeleccionad
   const [ticket, setTicket] = useState<ITblTicket | null>(null)
   const [userAsignadoTicket, setUserAsignadoTicket] = useState<ITblUsuario | null>(null)
   const [listadoUsuariosMantenedor, setListadoUsuariosMantenedor] = useState<ITblUsuario[]>([])
+  const [listadoOpcionUsuarios, setListadoOpcionUsuarios] = useState<ITblUsuario[]>([])
 
   const abrirModal = () => {
     setAbrir(true)
@@ -82,33 +84,33 @@ export const ModalAsignarResponsable = ({ listaDatosTickets, idTicketSeleccionad
       setCargando(true)
       if (data != null) {
         const newTicket = {
+          ...ticket,
           TickId: ticket?.TickId,
-          UserCreaId: ticket?.UserCreaId,
-          CategoriaId: ticket?.CategoriaId,
-          TickTitulo: ticket?.TickTitulo,
-          TickDescripcion: ticket?.TickDescripcion,
-          EstadoId: ticket?.EstadoId,
-          FechaCreacion: ticket?.FechaCreacion,
+          EstadoId: userAsignadoTicket?.UsuRut != null ? 2 : 1,
           UserAsignadoRut: userAsignadoTicket?.UsuRut ?? ticket?.UserAsignadoRut,
           FechaAsignacion: new Date(),
-          Activo: ticket?.Activo
         }
 
         const { data: dataTicket } = await instanceMiddlewareApi.post(`/Parametros/UpdateTicket`, newTicket)
 
         if (dataTicket.Data != null) {
-          Swal.fire({
+          await Swal.fire({
             title: 'Exito',
-            text: 'Se Actualizo exitosamente el Ticket',
+            text: `Ticket N°${ticket?.TickId} asignado correctamente.`,
             icon: 'success',
             confirmButtonColor: '#0098aa',
             confirmButtonText: 'Aceptar'
+          }).then((result: any) => {
+            if (result.isConfirmed) {
+              cerrarModal();
+              recargar()
+            }
           })
         }
       } else {
         Swal.fire({
           title: 'Ocurrio un error',
-          text: 'No se pudo crear el Ticket',
+          text: 'No se pudo asignar el Ticket',
           icon: 'error',
           confirmButtonColor: '#0098aa',
           confirmButtonText: 'Aceptar'
@@ -130,9 +132,12 @@ export const ModalAsignarResponsable = ({ listaDatosTickets, idTicketSeleccionad
       const { data: ListadoUsuarios } = await instanceMiddlewareApi.get(`/Usuarios/ObtenerUsuarios`)
       setListadoUsuariosMantenedor(ListadoUsuarios.Data ?? [])
       if (idTicket > 0) {
-        const ticketCaso = listaDatosTickets.find(x => x.TickId == idTicket)
+        const ticketCaso = listaDatosTickets.find(x => x.TickId == idTicket )
         setTicket(ticketCaso ?? null)
-        const userAsignadoCaso = listadoUsuariosMantenedor.find(x => x.UsuRut == ticketCaso?.UserAsignadoRut)
+        const userAsignadoCaso = ListadoUsuarios.Data.find((x : ITblUsuario) => x.UsuRut == ticketCaso?.UserAsignadoRut )
+        //cambiar quizas
+        setListadoOpcionUsuarios(ListadoUsuarios.Data.filter((x : ITblUsuario) => x.UsuRol == 'trabajador' ))
+        // console.log(listadoOpcionUsuarios)
         setUserAsignadoTicket(userAsignadoCaso ?? null)
       } else {
         Swal.fire({
@@ -203,7 +208,7 @@ export const ModalAsignarResponsable = ({ listaDatosTickets, idTicketSeleccionad
                         filterSelectedOptions
                         value={userAsignadoTicket ?? null}
                         id='tags-standard'
-                        options={listadoUsuariosMantenedor}
+                        options={listadoOpcionUsuarios}
                         getOptionLabel={option => `${option.UsuNombre} ${option.UsuApellido}` ?? ''}
                         onChange={(e, data) => {
                           handleChangeUserCreaTicket(data)

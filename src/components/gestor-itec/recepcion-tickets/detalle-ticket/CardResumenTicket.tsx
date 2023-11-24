@@ -6,14 +6,11 @@ import {
   CardHeader,
   Grid,
   DialogActions,
-  Tooltip,
-  Button,
   TextField,
   FormHelperText,
   Autocomplete,
   DialogContent
 } from '@mui/material'
-import { Save } from '@mui/icons-material'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -21,7 +18,12 @@ import Swal from 'sweetalert2'
 import { ITblCategorias, ITblDetalleTicket, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
 import { TimeLineDetalleTicket } from './TimeLineDetalleTicket'
 import { ModalAgregarDetalleTicket } from './ModalAgregarDetalleTicket'
+import { ModalCerrarTicket } from './ModalCerrarTicket'
 import { instanceMiddlewareApi } from 'src/axios'
+import CustomChip from 'src/@core/components/mui/chip'
+import { encryptText } from 'src/helpers'
+
+
 
 const schemaTicket = yup.object({
   Titulo: yup.string().required('Campo Requerido'),
@@ -39,18 +41,11 @@ interface IFormInputs {
 
 type Props = {
   infoTicket: ITblTicket | null
-  infoDetallesTicket: ITblDetalleTicket[]
-  listaDatosUsuarios: ITblUsuario[]
-  listaDatosCategorias: ITblCategorias[]
-  listaDatosEstados: ITblEstados[]
 }
 
 export const ResumenTicket = ({
-  infoTicket,
-  infoDetallesTicket,
-  listaDatosUsuarios,
-  listaDatosCategorias,
-  listaDatosEstados
+  infoTicket
+
 }: Props) => {
   const [cargando, setCargando] = useState<boolean>(true)
   const [ticket, setTicket] = useState<ITblTicket | null>(null)
@@ -58,8 +53,11 @@ export const ResumenTicket = ({
   const [estadoTicket, setEstadoTicket] = useState<ITblEstados | null>(null)
   const [userAsignadoTicket, setUserAsignadoTicket] = useState<ITblUsuario | null>(null)
 
+  const [dataUsuarios, setDataUsuarios] = useState<ITblUsuario[]>([])
+  const [listadoDetallesTicket, setListadoDetallesTicket] = useState<ITblDetalleTicket[]>([])
+  const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
+
   const {
-    handleSubmit,
     control: controlTicket,
     formState: { errors: errorsTicket },
     setValue: setValueTicket
@@ -67,72 +65,48 @@ export const ResumenTicket = ({
     resolver: yupResolver(schemaTicket)
   })
 
-  const guardarDatos = async (data: IFormInputs) => {
+
+  const cargarDetalleTicket = async () => {
     try {
-      setCargando(true)
-      if (ticket != null) {
-        const { id: idUser } = JSON.parse(window.localStorage.getItem('userData')!)
-
-        const newTicket = {
-          TickId: ticket.TickId,
-          UserCreaId: idUser,
-          CategoriaId: categoriaTicket?.CatId,
-          TickTitulo: data.Titulo,
-          TickDescripcion: data.Descripción,
-          EstadoId: estadoTicket?.EstadoId,
-          FechaCreacion: ticket.FechaCreacion,
-          UserAsignadoId: userAsignadoTicket?.UsuId,
-          FechaAsignacion: new Date(),
-          Activo: ticket.Activo
-        }
-
-        const { data: dataTicket } = await instanceMiddlewareApi.post(`/Parametros/UpdateTicket`, newTicket)
-
-        if (dataTicket.Data != null) {
-          Swal.fire({
-            title: 'Éxito',
-            text: 'Se agregó el comentario exitosamente.',
-            icon: 'success',
-            confirmButtonColor: '#0098aa',
-            confirmButtonText: 'Aceptar'
-          })
-        }
-      } else {
-        Swal.fire({
-          title: 'Ocurrio un error',
-          text: 'No se pudo agregar el comentario.',
-          icon: 'error',
-          confirmButtonColor: '#0098aa',
-          confirmButtonText: 'Aceptar'
-        })
-      }
+      const { data: DataDetallesTicket } = await instanceMiddlewareApi.post('/Parametros/ObtenerListadoTicketDetallesById', { IdConsulta: encryptText(infoTicket?.TickId.toString() ?? '') })
+      setListadoDetallesTicket(DataDetallesTicket.Data ?? [])
     } catch (error) {
-      console.log(error)
-      setCargando(false)
-
-      return
-    } finally {
-      setCargando(false)
+      console.error(error)
     }
   }
 
-  const cargarDatos = () => {
+  const cargarDatos = async () => {
     try {
       setCargando(true)
+      const consultasApi = [
+        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') },
+        { name: 'Lista de Categorias', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoCategoriasTickets') },
+        { name: 'Lista de Estados', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoEstadosTickets') },
+      ]
+
+      const results = await Promise.allSettled(consultasApi.map(req => req.promise))
+
+      const ListaUsuarios = results[0].status === 'fulfilled' ? results[0].value?.data : null
+      const ListaCategorias = results[1].status === 'fulfilled' ? results[1].value?.data : []
+      const ListaEstados = results[2].status === 'fulfilled' ? results[2].value?.data : []
+
+      setDataUsuarios(ListaUsuarios.Data)
       if (infoTicket != null) {
+        console.log(infoTicket)
+        await cargarDetalleTicket()
         setTicket(infoTicket)
         setValueTicket('Titulo', infoTicket.TickTitulo)
         setValueTicket('Descripción', infoTicket.TickDescripcion)
 
-        const categoriaFind = listaDatosCategorias.find(x => x.CatId == infoTicket.CategoriaId)
+        const categoriaFind = ListaCategorias.Data.find((x: ITblCategorias) => x.CatId == infoTicket.CategoriaId)
         setCategoriaTicket(categoriaFind ?? null)
         setValueTicket('CategoriaTicket', categoriaFind?.CatNombre ?? null)
 
-        const estadoFind = listaDatosEstados.find(x => x.EstadoId == infoTicket.EstadoId)
+        const estadoFind = ListaEstados.Data.find((x: ITblEstados) => x.EstadoId == infoTicket.EstadoId)
         setEstadoTicket(estadoFind ?? null)
         setValueTicket('EstadoTicket', estadoFind?.EstadoNombre ?? null)
 
-        const userCreaFind = listaDatosUsuarios.find(x => x.UsuRut == infoTicket.UserAsignadoRut)
+        const userCreaFind = ListaUsuarios.Data.find((x: ITblUsuario) => x.UsuRut == infoTicket.UserAsignadoRut)
         setUserAsignadoTicket(userCreaFind ?? null)
         setValueTicket('UserAsignado', userCreaFind?.UsuNombre ?? null)
       } else {
@@ -154,28 +128,31 @@ export const ResumenTicket = ({
     }
   }
 
-  const handleChangeCategoriaTicket = (data: any) => {
-    setCategoriaTicket(data)
-    setValueTicket('CategoriaTicket', data.CatId)
-  }
-
-  const handleChangeEstadoTicket = (data: any) => {
-    setEstadoTicket(data)
-    setValueTicket('EstadoTicket', data.EstadoId)
-  }
-
   const handleChangeUserCreaTicket = (data: any) => {
     setUserAsignadoTicket(data)
     setValueTicket('UserAsignado', data.UsuId)
+  }
+
+  type ChipColor = 'default' | 'info' | 'success' | 'error' | 'warning' | 'primary' | 'secondary'
+
+  function getColor(estadoNombre: string | undefined): ChipColor {
+    switch (estadoNombre) {
+      case 'En Proceso':
+        return 'info'
+      case 'Abierto':
+        return 'success'
+      case 'Cerrado':
+        return 'error'
+      default:
+        return 'warning'
+    }
   }
 
   useEffect(() => {
     if (infoTicket && infoTicket != null) {
       cargarDatos()
     }
-  }, [infoDetallesTicket, listaDatosUsuarios, listaDatosCategorias, listaDatosEstados])
-
-  const onErrors: any = (errors: any, e: any) => console.log(errors, e)
+  }, [])
 
   return cargando ? (
     <UserSpinner />
@@ -183,204 +160,127 @@ export const ResumenTicket = ({
     <>
       <Card sx={{ mb: 5, position: 'relative' }}>
         <CardHeader
-          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+          sx={{ display: 'flex', alignItems: 'center', paddingLeft: '45px' }}
           title={`Detalle Ticket N° ${ticket?.TickId}`}
+          subheader={
+            <>
+              <CustomChip label={categoriaTicket?.CatNombre} color={'info'} sx={{ marginRight: '8px' }} />
+              <CustomChip label={estadoTicket?.EstadoNombre} skin='light' color={getColor(estadoTicket?.EstadoNombre)} />
+            </>
+          }
         />
         <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
-          <form onSubmit={handleSubmit(guardarDatos, onErrors)}>
-            <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 5 }, pt: { xs: 8, sm: 1.5 }, position: 'relative' }}>
-              {cargando ? (
-                <UserSpinner />
-              ) : (
-                <Grid container spacing={5}>
-                  <Grid item xs={12} sm={12}>
-                    <Controller
-                      name='Titulo'
-                      control={controlTicket}
-                      defaultValue={''}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          fullWidth
-                          label='Título'
-                          onChange={onChange}
-                          value={value}
-                          error={Boolean(errorsTicket.Titulo)}
-                          id='filled-multiline-flexible'
-                          multiline
-                          InputProps={{
-                            readOnly: true,
-                          }}
-                        />
-                      )}
-                    />
-                    {errorsTicket.Titulo && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Titulo.message}</FormHelperText>
+          <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 5 }, pt: { xs: 8, sm: 1.5 }, position: 'relative' }}>
+            {cargando ? (
+              <UserSpinner />
+            ) : (
+              <Grid container spacing={5}>
+                <Grid item xs={12} sm={8}>
+                  <Controller
+                    name='Titulo'
+                    control={controlTicket}
+                    defaultValue={''}
+                    render={({ field: { value, onChange } }) => (
+                      <TextField
+                        fullWidth
+                        label='Título'
+                        onChange={onChange}
+                        value={value}
+                        error={Boolean(errorsTicket.Titulo)}
+                        id='filled-multiline-flexible'
+                        multiline
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
                     )}
-                  </Grid>
-
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name='CategoriaTicket'
-                      control={controlTicket}
-                      render={({ field: { onChange } }) => (
-                        <Autocomplete
-                          filterSelectedOptions
-                          value={categoriaTicket}
-                          id='tags-standard'
-                          options={listaDatosCategorias}
-                          getOptionLabel={option => option.CatNombre ?? ''}
-                          onChange={(e, data) => {
-                            onChange(data)
-                            handleChangeCategoriaTicket(data)
-                          }}
-                          
-                          renderInput={params => (
-                            <TextField
-                              {...params}
-                              error={Boolean(errorsTicket.CategoriaTicket)}
-                              fullWidth
-                              label='Categoría'
-                              variant='outlined'
-                            />
-                          )}
-                          renderOption={(props, option) => {
-                            return (
-                              <li {...props} key={option.CatId}>
-                                {option.CatNombre}
-                              </li>
-                            )
-                          }}
-                          disabled
-                        />
-                      )}
-                    />
-                    {errorsTicket.CategoriaTicket && (
-                      <FormHelperText sx={{ color: 'error.main' }}>
-                        {errorsTicket.CategoriaTicket.message}
-                      </FormHelperText>
-                    )}
-                  </Grid>
-
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name='EstadoTicket'
-                      control={controlTicket}
-                      render={({ field: { onChange } }) => (
-                        <Autocomplete
-                          filterSelectedOptions
-                          value={estadoTicket}
-                          id='tags-standard'
-                          options={listaDatosEstados}
-                          getOptionLabel={option => option.EstadoNombre ?? ''}
-                          onChange={(e, data) => {
-                            onChange(data)
-                            handleChangeEstadoTicket(data)
-                          }}
-                          renderInput={params => (
-                            <TextField
-                              {...params}
-                              error={Boolean(errorsTicket.EstadoTicket)}
-                              fullWidth
-                              label='Estado'
-                              variant='outlined'
-                            />
-                          )}
-                          renderOption={(props, option) => {
-                            return (
-                              <li {...props} key={option.EstadoId}>
-                                {option.EstadoNombre}
-                              </li>
-                            )
-                          }}
-                          disabled
-                        />
-                      )}
-                    />
-                    {errorsTicket.EstadoTicket && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.EstadoTicket.message}</FormHelperText>
-                    )}
-                  </Grid>
-
-                  <Grid item xs={12} sm={4}>
-                    <Controller
-                      name='UserAsignado'
-                      control={controlTicket}
-                      render={({ field: { onChange } }) => (
-                        <Autocomplete
-                          filterSelectedOptions
-                          value={userAsignadoTicket}
-                          id='tags-standard'
-                          options={listaDatosUsuarios}
-                          getOptionLabel={option => `${option.UsuNombre ?? ''} ${option.UsuApellido ?? ''}` ?? ''}
-                          onChange={(e, data) => {
-                            onChange(data)
-                            handleChangeUserCreaTicket(data)
-                          }}
-                          renderInput={params => (
-                            <TextField
-                              {...params}
-                              error={Boolean(errorsTicket.UserAsignado)}
-                              fullWidth
-                              label='Responsable'
-                              variant='outlined'
-                            />
-                          )}
-                          renderOption={(props, option) => {
-                            return (
-                              <li {...props} key={option.UsuId}>
-                                {option.UsuNombre} {option.UsuApellido}
-                              </li>
-                            )
-                          }}
-                          disabled
-                        />
-                      )}
-                    />
-                    {errorsTicket.UserAsignado && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.UserAsignado.message}</FormHelperText>
-                    )}
-                  </Grid>
-
-                  <Grid item xs={12} sm={12}>
-                    <Controller
-                      name='Descripción'
-                      control={controlTicket}
-                      defaultValue={''}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          fullWidth
-                          multiline
-                          rows={6}
-                          label='Descripción'
-                          onChange={onChange}
-                          value={value}
-                          error={Boolean(errorsTicket.Descripción)}
-                          id='textarea-outlined-static'
-                          InputProps={{
-                            readOnly: true,
-                          }}
-                        />
-                      )}
-                    />
-                    {errorsTicket.Descripción && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Descripción.message}</FormHelperText>
-                    )}
-                  </Grid>
-
-                  <Grid item xs={12} sm={12}>
-                    <TimeLineDetalleTicket detalleTicket={infoDetallesTicket} listaDatosUsuarios={listaDatosUsuarios} />
-                  </Grid>
+                  />
+                  {errorsTicket.Titulo && (
+                    <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Titulo.message}</FormHelperText>
+                  )}
                 </Grid>
-              )}
-            </DialogContent>
-            <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
-              <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} />
 
-              <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
-                <Save sx={{ mr: 1 }} /> Guardar
-              </Button>
+                <Grid item xs={12} sm={4}>
+                  <Controller
+                    name='UserAsignado'
+                    control={controlTicket}
+                    render={({ field: { onChange } }) => (
+                      <Autocomplete
+                        filterSelectedOptions
+                        value={userAsignadoTicket}
+                        id='tags-standard'
+                        options={dataUsuarios}
+                        getOptionLabel={option => `${option.UsuNombre ?? ''} ${option.UsuApellido ?? ''}` ?? ''}
+                        onChange={(e, data) => {
+                          onChange(data)
+                          handleChangeUserCreaTicket(data)
+                        }}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={Boolean(errorsTicket.UserAsignado)}
+                            fullWidth
+                            label='Responsable'
+                            variant='outlined'
+                          />
+                        )}
+                        renderOption={(props, option) => {
+                          return (
+                            <li {...props} key={option.UsuId}>
+                              {option.UsuNombre} {option.UsuApellido}
+                            </li>
+                          )
+                        }}
+                        disabled
+                      />
+                    )}
+                  />
+                  {errorsTicket.UserAsignado && (
+                    <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.UserAsignado.message}</FormHelperText>
+                  )}
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Controller
+                    name='Descripción'
+                    control={controlTicket}
+                    defaultValue={''}
+                    render={({ field: { value, onChange } }) => (
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={6}
+                        label='Descripción'
+                        onChange={onChange}
+                        value={value}
+                        error={Boolean(errorsTicket.Descripción)}
+                        id='textarea-outlined-static'
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                  {errorsTicket.Descripción && (
+                    <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Descripción.message}</FormHelperText>
+                  )}
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <TimeLineDetalleTicket detalleTicket={listadoDetallesTicket} listaDatosUsuarios={dataUsuarios} />
+                </Grid>
+              </Grid>
+            )}
+          </DialogContent>
+          {rolUsuario == 'admin' && ticket?.EstadoId != 3 || rolUsuario == 'trabajador' && ticket?.EstadoId != 3 ? (
+            <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
+              <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} />
+              <ModalCerrarTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} infoTicket={infoTicket} />
+
+
             </DialogActions>
-          </form>
+          ) : null}
+
         </CardContent>
       </Card>
     </>

@@ -11,9 +11,11 @@ import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser'
 import { ITblCategorias, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
 import { ModalAsignarResponsable } from './ModalAsignarResponsable'
 import { instanceMiddlewareApi } from 'src/axios'
+import { ModalCerrarTicket } from './ModalCerrarTicket'
 
 type Props = {
   listaDatosTickets: ITblTicket[]
+  recargar: () => Promise<void>
 }
 
 type ChipColor = 'default' | 'info' | 'success' | 'error' | 'warning' | 'primary' | 'secondary'
@@ -31,15 +33,17 @@ function getColorForEstado(estadoNombre: string | undefined): ChipColor {
   }
 }
 
-export const CardTablaAllTickets = ({ listaDatosTickets }: Props) => {
+export const CardTablaAllTickets = ({ listaDatosTickets, recargar }: Props) => {
+  const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
+
   const columns: GridColDef[] = [
     {
-      field: 'CorrelativeId',
-      headerName: 'N°',
+      field: 'TickId',
+      headerName: 'Id',
       headerAlign: 'center',
-      align: 'center',
+      align: 'left',
       flex: 0.5,
-      width: 30,
+      minWidth: 30,
       renderCell: params => (
         <Tooltip title={params.value ? params.value.toString() : ''} arrow>
           <Box
@@ -65,11 +69,10 @@ export const CardTablaAllTickets = ({ listaDatosTickets }: Props) => {
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const { row } = params
-        const usuarioCrea = dataUsuarios.find(x => (x.UsuId = row.UserCreaId))
+        const usuarioCrea = dataUsuarios.find(x => (x.UsuId == params.value))
 
         return (
-          <Tooltip title={params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : ''} arrow>
+          <Tooltip title={usuarioCrea ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : ''} arrow>
             <Box
               component='span'
               sx={{
@@ -80,7 +83,7 @@ export const CardTablaAllTickets = ({ listaDatosTickets }: Props) => {
                 display: 'inline-block'
               }}
             >
-              {params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : '-'}
+              {usuarioCrea ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : '-'}
             </Box>
           </Tooltip>
         )
@@ -251,7 +254,7 @@ export const CardTablaAllTickets = ({ listaDatosTickets }: Props) => {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      width: 100,
+      width: 150,
       renderCell: params => {
         const { row } = params
 
@@ -266,7 +269,13 @@ export const CardTablaAllTickets = ({ listaDatosTickets }: Props) => {
                 </Tooltip>
               </a>
             </Link>
-            <ModalAsignarResponsable idTicketSeleccionado={row.TickId} listaDatosTickets={listaDatosTickets} />
+            {rolUsuario == 'admin' && (
+              <ModalAsignarResponsable idTicketSeleccionado={row.TickId} listaDatosTickets={listaDatosTickets} recargar={recargar} />
+            )}
+            {rolUsuario == 'admin' && row.EstadoId != 3 || rolUsuario == 'trabajador' && row.EstadoId != 3 ? (
+              <ModalCerrarTicket idTicketAbierto={row.TickId} recargar={recargar} infoTicket={row} />
+            ) : null}
+
           </Box>
         )
       }
@@ -342,6 +351,7 @@ export const CardTablaAllTickets = ({ listaDatosTickets }: Props) => {
             listaDatosUsuarios={dataUsuarios}
             listaDatosCategorias={dataCategorias}
             listaDatosEstados={dataEstados}
+            recargar={recargar}
           />
         }
       />

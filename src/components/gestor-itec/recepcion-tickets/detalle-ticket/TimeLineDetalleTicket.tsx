@@ -7,7 +7,7 @@ import {
   TimelineProps
 } from '@mui/lab'
 import MuiTimeline from '@mui/lab/Timeline'
-import { renderFormartFecha } from 'src/helpers'
+import { renderFormartFecha, renderFormartFechaHora, renderFormartFechaHoraEn, renderFormartFechaHoraMedica } from 'src/helpers'
 
 type Props = {
   detalleTicket: ITblDetalleTicket[] | null
@@ -70,7 +70,7 @@ export const TimeLineDetalleTicket = ({ detalleTicket, listaDatosUsuarios }: Pro
                   </Box>
                 </Box>
                 <Typography sx={{ mr: 2, fontWeight: 600 }}>
-                  {renderFormartFecha(b.FechaCreacion)}
+                  {renderFormartFechaHora(b.FechaCreacion) }
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
