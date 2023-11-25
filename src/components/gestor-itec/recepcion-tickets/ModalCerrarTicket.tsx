@@ -1,4 +1,4 @@
-import { Add, Block, BlockOutlined, Close, Save } from '@mui/icons-material'
+import { Add, Block, BlockOutlined, Close, RedoOutlined, Save } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -83,21 +83,26 @@ export const ModalCerrarTicket = ({
   const guardarDatos = async (data: IFormInputs) => {
     try {
       setCargando(true)
+
       if (idTicketAbierto != null && idTicketAbierto > 0) {
         const { id: idUser } = JSON.parse(window.localStorage.getItem('userData')!)
         const { fullName: nombreUsuario } = JSON.parse(window.localStorage.getItem('userData')!)
+        const estado = ticket?.EstadoId == 3 ? 'reabrió' : 'cerró';
 
         const newComentario = {
           TicketId: idTicketAbierto,
           UserCreaId: idUser,
-          DetalleTicketDescripcion: `*****Ticket cerrado por: ${nombreUsuario} *****\n Resolución: \n ${data.Descripción}`,
+          DetalleTicketDescripcion: `*****Ticket se ${estado} por: ${nombreUsuario} *****\n Resolución: \n ${data.Descripción}`,
         }
+
         if (ticket != null) {
           const newTicket = {
             ...ticket,
             TickId: idTicketAbierto,
-            EstadoId: 3
+            EstadoId: ticket?.EstadoId == 3 ? 2 : 3,
           }
+
+
 
 
           const { data: dataTicket } = await instanceMiddlewareApi.post(`/Parametros/UpdateTicket`, newTicket)
@@ -106,7 +111,7 @@ export const ModalCerrarTicket = ({
           if (dataDetalle.Data != null && dataTicket.Data != null) {
             await Swal.fire({
               title: 'Exito',
-              text: `El Ticket N°${idTicketAbierto} se cerró correctamente.`,
+              text: `El Ticket N°${idTicketAbierto} se ${estado} correctamente.`,
               icon: 'success',
               confirmButtonColor: '#0098aa',
               confirmButtonText: 'Aceptar'
@@ -121,7 +126,7 @@ export const ModalCerrarTicket = ({
       } else {
         Swal.fire({
           title: 'Ocurrio un error',
-          text: `No se pudo cerrar el Ticket N°${idTicketAbierto}.`,
+          text: `No se pudo procesar Ticket N°${idTicketAbierto}.`,
           icon: 'error',
           confirmButtonColor: '#0098aa',
           confirmButtonText: 'Aceptar'
@@ -141,11 +146,22 @@ export const ModalCerrarTicket = ({
 
   return (
     <>
-      <Tooltip title={`Cerrar Ticket`} arrow>
-        <Button sx={{ mt: 2, mb: 2 }} variant='text' color='error' onClick={() => abrirModal()}>
-          <BlockOutlined />
+
+      {infoTicket?.EstadoId === 3 ? (<Tooltip title={`Reabrir Ticket`} arrow>
+        <Button sx={{ mt: 2, mb: 2 }} variant='text' color='success' onClick={() => abrirModal()}>
+
+          <RedoOutlined />
+
         </Button>
-      </Tooltip>
+      </Tooltip>) : (
+        <Tooltip title={`Cerrar Ticket`} arrow>
+          <Button sx={{ mt: 2, mb: 2 }} variant='text' color='error' onClick={() => abrirModal()}>
+            <BlockOutlined />
+
+
+          </Button>
+        </Tooltip>
+      )}
 
       <Dialog
         fullWidth
@@ -164,7 +180,7 @@ export const ModalCerrarTicket = ({
 
             <Box sx={{ mb: 8, textAlign: 'center' }}>
               <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
-                Ingresar resolución para cerrar ticket
+                Ingrese resolución para {ticket?.EstadoId == 3 ? 'reabrir' : 'cerrar'} Ticket N°{idTicketAbierto}
               </Typography>
             </Box>
 
@@ -200,7 +216,7 @@ export const ModalCerrarTicket = ({
           </DialogContent>
           <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
             <Button variant='outlined' sx={{ mr: 2 }} type='submit' color='success'>
-              <Save sx={{ mr: 1 }} /> Cerrar Ticket
+              <Save sx={{ mr: 1 }} /> Guardar
             </Button>
             <Button variant='outlined' color='secondary' onClick={cerrarModal}>
               Cancelar
