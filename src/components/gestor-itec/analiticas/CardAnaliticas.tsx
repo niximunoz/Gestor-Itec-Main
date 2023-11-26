@@ -151,7 +151,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               chipColor: 'success',
               trendNumber: '',
               chipText: 'Last Month',
-              src: '/images/cards/card-stats-img-3.png'
+              src: '/images/cards/trophy.png'
             }}
             listaDatosTickets={listadoTicketsAsigAbiertos ?? []}
             listaDatosUsuarios={listadoUsuarios ?? []}
@@ -167,7 +167,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               chipColor: 'success',
               trendNumber: '',
               chipText: 'Last Month',
-              src: '/images/cards/card-stats-img-3.png'
+              src: '/images/cards/trophy.png'
             }}
             listaDatosTickets={listadoTicketsAsigEnProceso ?? []}
             listaDatosUsuarios={listadoUsuarios ?? []}
@@ -183,7 +183,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               chipColor: 'success',
               trendNumber: '',
               chipText: 'Last Month',
-              src: '/images/cards/card-stats-img-4.png'
+              src: '/images/cards/trophy.png'
             }}
             listaDatosTickets={listadoTicketsAsigCerrados ?? []}
             listaDatosUsuarios={listadoUsuarios ?? []}
