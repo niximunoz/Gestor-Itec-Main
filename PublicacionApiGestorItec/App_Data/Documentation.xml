@@ -253,7 +253,7 @@
             <param name="ticket"></param>
             <returns></returns>
         </member>
-        <member name="M:ItecGroup.Api.Controllers.ParametrosController.UpdateTicket(ItecGroup.Applications.DTO.Parametros.WriteTicketDto)">
+        <member name="M:ItecGroup.Api.Controllers.ParametrosController.UpdateTicket(ItecGroup.Applications.DTO.Parametros.TicketDto)">
             <summary>
             Permite actualizar un ticket
             </summary>
