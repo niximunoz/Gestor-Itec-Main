@@ -9,21 +9,29 @@ import {
   TextField,
   FormHelperText,
   Autocomplete,
-  DialogContent
+  DialogContent,
+  CardActions,
+  Button,
+  Typography
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Swal from 'sweetalert2'
-import { ITblCategorias, ITblDetalleTicket, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
+import {
+  ITblCategorias,
+  ITblDetalleTicket,
+  ITblDocumentosTicket,
+  ITblEstados,
+  ITblTicket,
+  ITblUsuario
+} from 'src/interfaces'
 import { TimeLineDetalleTicket } from './TimeLineDetalleTicket'
 import { ModalAgregarDetalleTicket } from './ModalAgregarDetalleTicket'
 import { ModalCerrarTicket } from './ModalCerrarTicket'
 import { instanceMiddlewareApi } from 'src/axios'
 import CustomChip from 'src/@core/components/mui/chip'
 import { encryptText } from 'src/helpers'
-
-
 
 const schemaTicket = yup.object({
   Titulo: yup.string().required('Campo Requerido'),
@@ -43,10 +51,7 @@ type Props = {
   infoTicket: ITblTicket | null
 }
 
-export const ResumenTicket = ({
-  infoTicket
-
-}: Props) => {
+export const ResumenTicket = ({ infoTicket }: Props) => {
   const [cargando, setCargando] = useState<boolean>(true)
   const [ticket, setTicket] = useState<ITblTicket | null>(null)
   const [categoriaTicket, setCategoriaTicket] = useState<ITblCategorias | null>(null)
@@ -55,6 +60,7 @@ export const ResumenTicket = ({
 
   const [dataUsuarios, setDataUsuarios] = useState<ITblUsuario[]>([])
   const [listadoDetallesTicket, setListadoDetallesTicket] = useState<ITblDetalleTicket[]>([])
+  const [listadoDocumentosTicket, setListadoDocumentosTicket] = useState<ITblDocumentosTicket[]>([])
   const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
 
   const {
@@ -65,11 +71,19 @@ export const ResumenTicket = ({
     resolver: yupResolver(schemaTicket)
   })
 
-
   const cargarDetalleTicket = async () => {
     try {
-      const { data: DataDetallesTicket } = await instanceMiddlewareApi.post('/Parametros/ObtenerListadoTicketDetallesById', { IdConsulta: encryptText(infoTicket?.TickId.toString() ?? '') })
+      const { data: DataDetallesTicket } = await instanceMiddlewareApi.post(
+        '/Parametros/ObtenerListadoTicketDetallesById',
+        { IdConsulta: encryptText(infoTicket?.TickId.toString() ?? '') }
+      )
+      const { data: ListadoDocumentosTicket } = await instanceMiddlewareApi.post(
+        '/Parametros/ObtenerDocumentosTicketById',
+        { IdConsulta: encryptText(infoTicket?.TickId.toString() ?? '') }
+      )
       setListadoDetallesTicket(DataDetallesTicket.Data ?? [])
+      console.log(ListadoDocumentosTicket)
+      setListadoDocumentosTicket(ListadoDocumentosTicket.Data ?? [])
     } catch (error) {
       console.error(error)
     }
@@ -80,8 +94,11 @@ export const ResumenTicket = ({
       setCargando(true)
       const consultasApi = [
         { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') },
-        { name: 'Lista de Categorias', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoCategoriasTickets') },
-        { name: 'Lista de Estados', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoEstadosTickets') },
+        {
+          name: 'Lista de Categorias',
+          promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoCategoriasTickets')
+        },
+        { name: 'Lista de Estados', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoEstadosTickets') }
       ]
 
       const results = await Promise.allSettled(consultasApi.map(req => req.promise))
@@ -92,7 +109,6 @@ export const ResumenTicket = ({
 
       setDataUsuarios(ListaUsuarios.Data)
       if (infoTicket != null) {
-        console.log(infoTicket)
         await cargarDetalleTicket()
         setTicket(infoTicket)
         setValueTicket('Titulo', infoTicket.TickTitulo)
@@ -165,7 +181,11 @@ export const ResumenTicket = ({
           subheader={
             <>
               <CustomChip label={categoriaTicket?.CatNombre} color={'info'} sx={{ marginRight: '8px' }} />
-              <CustomChip label={estadoTicket?.EstadoNombre} skin='light' color={getColor(estadoTicket?.EstadoNombre)} />
+              <CustomChip
+                label={estadoTicket?.EstadoNombre}
+                skin='light'
+                color={getColor(estadoTicket?.EstadoNombre)}
+              />
             </>
           }
         />
@@ -190,7 +210,7 @@ export const ResumenTicket = ({
                         id='filled-multiline-flexible'
                         multiline
                         InputProps={{
-                          readOnly: true,
+                          readOnly: true
                         }}
                       />
                     )}
@@ -256,7 +276,7 @@ export const ResumenTicket = ({
                         error={Boolean(errorsTicket.Descripción)}
                         id='textarea-outlined-static'
                         InputProps={{
-                          readOnly: true,
+                          readOnly: true
                         }}
                       />
                     )}
@@ -264,6 +284,24 @@ export const ResumenTicket = ({
                   {errorsTicket.Descripción && (
                     <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Descripción.message}</FormHelperText>
                   )}
+                </Grid>
+
+                <Grid container spacing={2} style={{ marginTop: '32px' }}>
+                  {listadoDocumentosTicket.map(doc => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={doc.InfoDocumento.DocumentoNombreModificado}>
+                      <Card sx={{height: 150}}>
+                        <CardContent>
+                          {/* Contenido de la tarjeta, como el nombre del archivo y un icono */}
+                          <Typography variant="body1">{doc.InfoDocumento.DocumentoNombreModificado}</Typography>
+                        </CardContent>
+                        <CardActions>
+                          <Button size="small" color="primary" href={doc.InfoDocumento.RutaArchivoAlmacenado} target="_blank">
+                            Ver / Descargar
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  ))}
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
@@ -274,6 +312,8 @@ export const ResumenTicket = ({
           </DialogContent>
           <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
             {ticket?.EstadoId != 3 ? (
+          {(rolUsuario == 'admin' && ticket?.EstadoId != 3) || (rolUsuario == 'trabajador' && ticket?.EstadoId != 3) ? (
+            <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
               <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} />
             ) : null}
             {rolUsuario == 'admin' || rolUsuario == 'trabajador' ? (

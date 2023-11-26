@@ -2,14 +2,15 @@ import { Autocomplete, Grid, TextField } from '@mui/material'
 import CardStats from './CardStats'
 import { encryptText } from 'src/helpers'
 import { instanceMiddlewareApi } from 'src/axios'
-import { SyntheticEvent, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import UserSpinner from 'src/layouts/components/UserSpinner'
 import { ITblTicket, ITblUsuario } from 'src/interfaces'
 
 type Props = {
   listadoUsuarios: ITblUsuario[]
+  dataCargaInicial: any
 }
-export const CardAnaliticas = ({ listadoUsuarios }: Props) => {
+export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
   const [cargando, setCargando] = useState<boolean>(false)
   const [selectedUser, setSelectedUser] = useState<ITblUsuario | null>(null)
   const [cantidadCreadas, setCantidadCreadas] = useState<number>(0)
@@ -73,6 +74,34 @@ export const CardAnaliticas = ({ listadoUsuarios }: Props) => {
       await cargarGraficas(newValue.UsuRut.toString())
     }
   }
+
+  const cargarDatosGenerales = async () => {
+    try{
+      setCargando(true)
+      setCantidadTicketsAsigAbiertos(dataCargaInicial.Data.CantidadAbiertos ?? 0)
+      setCantidadTicketsAsigCerrados(dataCargaInicial.Data.CantidadCerrados ?? 0)
+      setCantidadTicketsAsigEnProceso(dataCargaInicial.Data.CantidadEnProceso ?? 0)
+      setListadoTicketsAsigAbiertos(dataCargaInicial.Data.ListadoTicketsAbiertos ?? [])
+      setListadoTicketsAsigCerrados(dataCargaInicial.Data.ListadoTicketsCerrados ?? [])
+      setLstadoTicketsAsigEnProceso(dataCargaInicial.Data.ListadoTicketsEnProceso ?? [])
+
+    }catch(error){
+      console.error(error)
+      setCargando(false)
+    } finally{
+      setCargando(false)
+    }
+  }
+
+  useEffect(() => {
+    setCantidadTicketsAsigAbiertos(dataCargaInicial.Data.CantidadAbiertos ?? 0)
+      setCantidadTicketsAsigCerrados(dataCargaInicial.Data.CantidadCerrados ?? 0)
+      setCantidadTicketsAsigEnProceso(dataCargaInicial.Data.CantidadEnProceso ?? 0)
+      setListadoTicketsAsigAbiertos(dataCargaInicial.Data.ListadoTicketsAbiertos ?? [])
+      setListadoTicketsAsigCerrados(dataCargaInicial.Data.ListadoTicketsCerrados ?? [])
+      setLstadoTicketsAsigEnProceso(dataCargaInicial.Data.ListadoTicketsEnProceso ?? [])
+  }, [dataCargaInicial])
+  
 
   return cargando ? (
     <UserSpinner />

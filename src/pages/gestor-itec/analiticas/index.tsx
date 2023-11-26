@@ -8,14 +8,17 @@ import UserSpinner from 'src/layouts/components/UserSpinner'
 const Index = () => {
   const [cargando, setCargando] = useState<boolean>(true)
   const [listadoUsuarios, setListadoUsuarios] = useState<ITblUsuario[]>([])
+  const [listadoCargaInicialDatos, setListadoCargaInicialDatos] = useState<any | null>()
 
   const cargarUsuarios = async () => {
     try {
       setCargando(true)
       const { data: dataUsuarios } = await instanceMiddlewareApi.get(`/Usuarios/ObtenerUsuarios`)
+      const { data: dataCargaInicial } = await instanceMiddlewareApi.get(`/Parametros/ObtenerCountTicketsGeneral`)
 
       if (dataUsuarios.Information.StatusCode == 200) {
         setListadoUsuarios(dataUsuarios.Data ?? [])
+        setListadoCargaInicialDatos(dataCargaInicial)
       }
     } catch (error) {
       console.error(error)
@@ -40,7 +43,7 @@ const Index = () => {
         <title>Analiticas</title>
         <meta name='description' content='Analiticas' />
       </Head>
-      <CardAnaliticas listadoUsuarios={listadoUsuarios} />
+      <CardAnaliticas listadoUsuarios={listadoUsuarios} dataCargaInicial={listadoCargaInicialDatos}/>
     </>
   )
 }
