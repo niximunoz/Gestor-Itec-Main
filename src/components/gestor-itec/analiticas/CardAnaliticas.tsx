@@ -38,7 +38,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
           IdConsulta: encryptText(rut)
         }
       )
-
+  
       const { data: ListadoTicketsAsignadosPorEstado } = await instanceMiddlewareApi.post(
         `/Parametros/ObtenerCountTicketsPorEstadoUser`,
         {
@@ -136,7 +136,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               trend: 'negative',
               title: 'Tickets Creados',
               chipColor: 'success',
-              trendNumber: '-25.5%',
+              trendNumber: '',
               chipText: 'Last Month',
               src: '/images/cards/card-stats-img-1.png'
             }}
@@ -152,7 +152,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               trend: 'negative',
               title: 'Tickets Asignados',
               chipColor: 'success',
-              trendNumber: '-25.5%',
+              trendNumber: '',
               chipText: 'Last Month',
               src: '/images/cards/card-stats-img-2.png'
             }}
@@ -168,7 +168,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               trend: 'negative',
               title: 'Tickets Abiertos',
               chipColor: 'success',
-              trendNumber: '-25.5%',
+              trendNumber: '',
               chipText: 'Last Month',
               src: '/images/cards/card-stats-img-3.png'
             }}
@@ -184,7 +184,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               trend: 'negative',
               title: 'Tickets En Proceso',
               chipColor: 'success',
-              trendNumber: '-25.5%',
+              trendNumber: '',
               chipText: 'Last Month',
               src: '/images/cards/card-stats-img-3.png'
             }}
@@ -200,7 +200,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
               trend: 'negative',
               title: 'Tickets Cerrados',
               chipColor: 'success',
-              trendNumber: '-25.5%',
+              trendNumber: '',
               chipText: 'Last Month',
               src: '/images/cards/card-stats-img-4.png'
             }}
