@@ -3,7 +3,6 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogTitle,
   Fade,
   FadeProps,
   Grid,
@@ -21,7 +20,7 @@ import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser'
 import { ITblCategorias, ITblEstados, ITblTicket, ITblUsuario } from 'src/interfaces'
 import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 import { Close } from 'mdi-material-ui'
-import { useParams } from 'src/hooks/useParams'
+import { instanceMiddlewareApi } from 'src/axios'
 
 const Transition = forwardRef(function Transition(
   props: FadeProps & { children?: ReactElement<any, any> },
@@ -35,7 +34,7 @@ type Props = {
   listaDatosUsuarios: ITblUsuario[]
 }
 
-export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Props) => {
+export const ModalTablaTickets = ({ listaDatosTickets }: Props) => {
   const columns: GridColDef[] = [
     {
       field: 'CorrelativeId',
@@ -70,7 +69,7 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
       minWidth: 100,
       renderCell: params => {
         const { row } = params
-        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuId = row.UserCreaId))
+        const usuarioCrea = dataUsuarios.find(x => (x.UsuId = row.UserCreaId))
 
         return (
           <Tooltip title={params.value ? `${usuarioCrea?.UsuNombre}  ${usuarioCrea?.UsuApellido}` : ''} arrow>
@@ -216,7 +215,7 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
       flex: 1,
       minWidth: 100,
       renderCell: params => {
-        const usuarioCrea = listaDatosUsuarios.find(x => (x.UsuRut == params.value)) ?? null
+        const usuarioCrea = dataUsuarios.find(x => (x.UsuRut == params.value)) ?? null
 
         return (
           <Tooltip title={usuarioCrea != null ? `${usuarioCrea.UsuNombre}  ${usuarioCrea.UsuApellido}` : '-'} arrow>
@@ -297,7 +296,6 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
   const [row, setRow] = useState<number>(10)
   const [buscar, setBuscar] = useState<string>('')
   const [abrir, setAbrir] = useState<boolean>(false)
-  const paramsUse = useParams()
 
   const requestSearch = (texto: string) => {
     setBuscar(texto)
@@ -315,11 +313,23 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
   const cargarDatos = async () => {
     try {
       setCargando(true)
-      setListadoCategorias(paramsUse.listadoCategorias ?? [])
-      setListadoEstados(paramsUse.listadoEstados ?? [])
-      setListDatosOrigen(listaDatosTickets)
-      setListDatos(listaDatosTickets)
-      setDataUsuarios(listaDatosUsuarios)
+      const consultasApi = [
+        { name: 'Lista de Categorias', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoCategoriasTickets') },
+        { name: 'Lista de Estados', promise: instanceMiddlewareApi.get('/Parametros/ObtenerListadoEstadosTickets') },
+        { name: 'Lista de Usuarios', promise: instanceMiddlewareApi.get('/Usuarios/ObtenerUsuarios') }
+      ]
+
+      const results = await Promise.allSettled(consultasApi.map(req => req.promise))
+
+      const ListaCategorias = results[0].status === 'fulfilled' ? results[0].value?.data : []
+      const ListaEstados = results[1].status === 'fulfilled' ? results[1].value?.data : []
+      const ListaUsuarios = results[2].status === 'fulfilled' ? results[2].value?.data : []
+
+      setListadoCategorias(ListaCategorias.Data ?? [])
+      setListadoEstados(ListaEstados.Data ?? [])
+      setDataUsuarios(ListaUsuarios.Data ?? [])
+      setListDatosOrigen(listaDatosTickets ?? [])
+      setListDatos(listaDatosTickets ?? [])
     } catch (error) {
       console.error(error)
       setCargando(false)
@@ -330,7 +340,7 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
     }
   }
 
-  const abrirModal = () => {
+  const abrirModal = async () => {
     setAbrir(true)
   }
 
@@ -344,7 +354,7 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
 
   useEffect(() => {
     const inicializar = async () => {
-      if (listaDatosTickets.length > 0 && listaDatosUsuarios.length > 0) {
+      if (listaDatosTickets.length > 0 ) {
         await cargarDatos()
       } else {
         setCargando(false)
@@ -352,7 +362,7 @@ export const ModalTablaTickets = ({ listaDatosTickets, listaDatosUsuarios }: Pro
     }
 
     inicializar()
-  }, [listaDatosTickets, listaDatosUsuarios])
+  }, [listaDatosTickets])
 
   return (
     <>
