@@ -22,6 +22,7 @@ import UserSpinner from 'src/layouts/components/UserSpinner'
 import Swal from 'sweetalert2'
 import { instanceMiddlewareApi } from 'src/axios'
 import { ITblTicket } from 'src/interfaces'
+import { Restart } from 'mdi-material-ui'
 
 const Transition = forwardRef(function Transition(
   props: FadeProps & { children?: ReactElement<any, any> },
@@ -148,9 +149,9 @@ export const ModalCerrarTicket = ({
     <>
 
       {infoTicket?.EstadoId === 3 ? (<Tooltip title={`Reabrir Ticket`} arrow>
-        <Button sx={{ mt: 2, mb: 2 }} variant='text' color='success' onClick={() => abrirModal()}>
+        <Button sx={{ mt: 2, mb: 2 }} variant='text' color='warning' onClick={() => abrirModal()}>
 
-          <RedoOutlined />
+          <Restart />
 
         </Button>
       </Tooltip>) : (

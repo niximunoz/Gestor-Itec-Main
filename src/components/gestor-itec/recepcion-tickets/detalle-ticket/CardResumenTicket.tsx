@@ -272,15 +272,14 @@ export const ResumenTicket = ({
               </Grid>
             )}
           </DialogContent>
-          {rolUsuario == 'admin' && ticket?.EstadoId != 3 || rolUsuario == 'trabajador' && ticket?.EstadoId != 3 ? (
-            <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
+          <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
+            {ticket?.EstadoId != 3 ? (
               <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} />
+            ) : null}
+            {rolUsuario == 'admin' || rolUsuario == 'trabajador' ? (
               <ModalCerrarTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} infoTicket={infoTicket} />
-
-
-            </DialogActions>
-          ) : null}
-
+            ) : null}
+          </DialogActions>
         </CardContent>
       </Card>
     </>
