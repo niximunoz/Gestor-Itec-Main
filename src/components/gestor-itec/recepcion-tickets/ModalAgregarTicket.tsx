@@ -13,7 +13,10 @@ import {
   TextField,
   Typography,
   Autocomplete,
-  Tooltip
+  styled,
+  TypographyProps,
+  ListItem,
+  List
 } from '@mui/material'
 import React, { forwardRef, ReactElement, Ref, useState } from 'react'
 import * as yup from 'yup'
@@ -23,10 +26,13 @@ import UserSpinner from 'src/layouts/components/UserSpinner'
 import Swal from 'sweetalert2'
 import { instanceMiddlewareApi } from 'src/axios'
 import { ITblCategorias, ITblEstados, ITblUsuario } from 'src/interfaces'
+import { useDropzone } from 'react-dropzone'
 
-
-
-
+export interface FileProp {
+  name: string
+  type: string
+  size: number
+}
 
 const Transition = forwardRef(function Transition(
   props: FadeProps & { children?: ReactElement<any, any> },
@@ -59,7 +65,6 @@ type Props = {
 export const ModalAgregarTicket = ({
   listaDatosUsuarios,
   listaDatosCategorias,
-  listaDatosEstados,
   recargar
 }: Props) => {
   const {
@@ -75,8 +80,8 @@ export const ModalAgregarTicket = ({
   const [cargando, setCargando] = useState(false)
   const [abrir, setAbrir] = useState<boolean>(false)
   const [categoriaTicket, setCategoriaTicket] = useState<ITblCategorias | null>(null)
-  const [estadoTicket, setEstadoTicket] = useState<ITblEstados | null>(null)
   const [userAsignadoTicket, setUserAsignadoTicket] = useState<ITblUsuario | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
 
   const abrirModal = () => {
@@ -88,8 +93,21 @@ export const ModalAgregarTicket = ({
     setAbrir(false)
     setCargando(false)
     setCategoriaTicket(null)
-    setEstadoTicket(null)
     setUserAsignadoTicket(null)
+  }
+
+  const getBase64 = (file: any) => {
+    return new Promise(resolve => {
+      const reader = new FileReader()
+
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        const baseURL = reader.result as string
+        const base64Data = baseURL.split(',')[1]
+
+        resolve(base64Data)
+      }
+    })
   }
 
   const guardarDatos = async (data: IFormInputs) => {
@@ -109,9 +127,21 @@ export const ModalAgregarTicket = ({
           FechaAsignacion: userAsignadoTicket != null ? new Date() : null,
           Activo: true
         }
+        console.log(files)
+        const listadoDocumentosAdjuntoPromises = files.map(file => getBase64(file).then(base64Data => {
+          return {
+            NombreArchivo: file.name,
+            Base64Archivo: base64Data
+          }
+        }))
+        const listadoDocumentosAdjunto = await Promise.all(listadoDocumentosAdjuntoPromises)
+        console.log(listadoDocumentosAdjunto)
+        const cuerpoEnvio = {
+          InfoTicket: newTicket,
+          DocumentosAdjuntos : listadoDocumentosAdjunto
+        }
 
-        const { data: dataTicket } = await instanceMiddlewareApi.post(
-          `/Parametros/SaveTicket`, newTicket)
+        const { data: dataTicket } = await instanceMiddlewareApi.post(`/Parametros/SaveTicket`, cuerpoEnvio)
 
         if (dataTicket.Data != null) {
           await Swal.fire({
@@ -127,7 +157,6 @@ export const ModalAgregarTicket = ({
             }
           })
         }
-
       } else {
         Swal.fire({
           title: 'Ocurrio un error',
@@ -145,6 +174,67 @@ export const ModalAgregarTicket = ({
     } finally {
       setCargando(false)
     }
+  }
+
+  const renderFilePreview = (file: FileProp) => {
+    const array = file.name.split('.')
+    const ext = array[array.length - 1]
+    if (ext === 'pdf') {
+      return <img width={38} height={38} src='/icons/file-icons/pdf.png' />
+    } else if (ext === 'xlsx') {
+      return <img width={38} height={38} src='/icons/file-icons/xls.png' />
+    }
+
+    return <img width={38} height={38} src='/icons/file-icons/doc.png' />
+  }
+
+  const fileList = files.map((file: FileProp) => (
+    <ListItem key={file.name}>
+      <div className='file-details'>
+        <div className='file-preview'>{renderFilePreview(file)}</div>
+        <div>
+          <Typography className='file-name'>{file.name}</Typography>
+          <Typography className='file-size' variant='body2'>
+            {Math.round(file.size / 100) / 10 > 1000
+              ? `${(Math.round(file.size / 100) / 10000).toFixed(1)} mb`
+              : `${(Math.round(file.size / 100) / 10).toFixed(1)} kb`}
+          </Typography>
+        </div>
+      </div>
+      <IconButton onClick={() => removeFile(file.name)}>
+        <Close />
+      </IconButton>
+    </ListItem>
+  ))
+
+  const Img = styled('img')(({ theme }) => ({
+    [theme.breakpoints.up('md')]: {
+      marginRight: theme.spacing(10)
+    },
+    [theme.breakpoints.down('md')]: {
+      marginBottom: theme.spacing(4)
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 250
+    }
+  }))
+
+  const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
+    marginBottom: theme.spacing(5),
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: theme.spacing(4)
+    }
+  }))
+
+  const { getRootProps, getInputProps } = useDropzone({
+    multiple: true,
+    onDrop: (acceptedFiles: File[]) => {
+      setFiles(prevFiles => [...prevFiles, ...acceptedFiles.map(file => Object.assign(file))])
+    }
+  })
+
+  const removeFile = (fileName: string) => {
+    setFiles(prevFiles => prevFiles.filter(file => file.name !== fileName))
   }
 
   const handleChangeCategoriaTicket = (data: any) => {
@@ -299,11 +389,12 @@ export const ModalAgregarTicket = ({
                       )}
                     />
                     {errorsTicket.RutUsuarioAsignado && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.RutUsuarioAsignado.message}</FormHelperText>
+                      <FormHelperText sx={{ color: 'error.main' }}>
+                        {errorsTicket.RutUsuarioAsignado.message}
+                      </FormHelperText>
                     )}
                   </Grid>
                 )}
-
 
                 <Grid item xs={12} sm={12}>
                   <Controller
@@ -327,6 +418,55 @@ export const ModalAgregarTicket = ({
                   {errorsTicket.Descripción && (
                     <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Descripción.message}</FormHelperText>
                   )}
+                </Grid>
+                <Grid item xs={12}>
+                  <Box
+                    {...getRootProps({ className: 'dropzone' })}
+                    sx={
+                      files.length
+                        ? {
+                            height: 120,
+                            width: '100%',
+                            border: '5px dashed #DBDBDD',
+                            padding: '4px',
+                            display: 'flex',
+                            justifyContent: 'center'
+                          }
+                        : { border: '5px dashed #DBDBDD', padding: '4px' }
+                    }
+                  >
+                    <input {...getInputProps()} />
+                    {files.length ? (
+                      <Box sx={{
+                        maxHeight: '200px',
+                        overflowY: 'auto',
+                        width: '100%',
+                      }}>
+                        <List>{fileList}</List>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: ['column', 'column', 'row'],
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <Img width={200} alt='Upload img' src='/images/misc/upload.png' />
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            textAlign: ['center', 'center', 'inherit']
+                          }}
+                        >
+                          <HeadingTypography variant='h6'>Ingreso de documentos</HeadingTypography>
+                          <Typography color='textSecondary'>Arrastra el archivo aquí o haz un click </Typography>
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
                 </Grid>
               </Grid>
             )}
