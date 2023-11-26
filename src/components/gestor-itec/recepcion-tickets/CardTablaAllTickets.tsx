@@ -254,7 +254,7 @@ export const CardTablaAllTickets = ({ listaDatosTickets, recargar }: Props) => {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      width: 150,
+      minWidth: 180,
       renderCell: params => {
         const { row } = params
 
@@ -269,10 +269,10 @@ export const CardTablaAllTickets = ({ listaDatosTickets, recargar }: Props) => {
                 </Tooltip>
               </a>
             </Link>
-            {rolUsuario == 'admin' && (
+            {rolUsuario === 'admin' && (
               <ModalAsignarResponsable idTicketSeleccionado={row.TickId} listaDatosTickets={listaDatosTickets} recargar={recargar} />
             )}
-            {rolUsuario == 'admin'  || rolUsuario == 'trabajador' ? (
+            {rolUsuario === 'admin'  || rolUsuario === 'trabajador' ? (
               <ModalCerrarTicket idTicketAbierto={row.TickId} recargar={recargar} infoTicket={row} />
             ) : null}
 
@@ -283,7 +283,7 @@ export const CardTablaAllTickets = ({ listaDatosTickets, recargar }: Props) => {
   ]
 
   const [cargando, setCargando] = useState<boolean>(true)
-  const [listDatos, setListDatos] = useState<any[]>([])
+  const [listDatos, setListDatos] = useState<ITblTicket[]>([])
   const [listDatosOrigen, setListDatosOrigen] = useState<any[]>([])
   const [row, setRow] = useState<number>(10)
   const [buscar, setBuscar] = useState<string>('')
@@ -322,10 +322,10 @@ export const CardTablaAllTickets = ({ listaDatosTickets, recargar }: Props) => {
       setDataCategorias(ListaCategorias.Data ?? [])
       setDataEstados(ListaEstados.Data ?? [])
       setDataUsuarios(ListaUsuarios.Data ?? [])
-      setListDatosOrigen(listaDatosTickets)
-      setListDatos(listaDatosTickets)
+      setListDatosOrigen(listaDatosTickets ?? [])
+      setListDatos(listaDatosTickets ?? [])
     } catch (error) {
-      console.log(error)
+      console.error(error)
       setCargando(false)
 
       return

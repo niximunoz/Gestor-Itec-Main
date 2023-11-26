@@ -1,0 +1,69 @@
+-> Fomulario de Ingreso(RESTANTE)
+.- PODER AGREGAR TELEFONOS CON BTN, FORMATO DE 9 DIGITOS Y CAMBIAR LABEL TELEFONO 1 Y 2.
+.- REVISAR FORMATO PARA NÚMEROS TELEFONOS PARA APOYAR EL INGRESO, CON EL COD DE REGION.( COD + 2 + NUMERO) (NO VA)
+.- DEBE TRAER LOS NÚMEROS DEL SISTEMA..- 
+.- BUSQUEDA PARA RUT SIN DIGITO VERIFICADOR (CAMBIAR)
+.- FORMULARIO PARA AGREGAR MÉDICO AL STAFF SINO SE ENCUENTRA EN MANTENEDOR ACTUAL. (SIST. CONVENIO + INGRESOS)
+.- Sí se marca LEY DE URGENCIA -> URGENCIA VITAL O SECUELA GRAVE DEBE MARCAR COMO SÍ (Esperar nuevo tipo solicitud)
+R:FALTA
+.- Objetivos Interconsulta -> quedo por definir (Esperar)
+
+
+COMPLETADO.
+.- Listado de prestadores, VER de donden vienen, ya que "REHACARER SPA" y "SATEP" no debería estar.
+R: Viene del EndPoint /GestionSalud/PrestadoresActivos
+.- Tipo de solitictud debe ser los destacados en verde del ppt entregado. Y adicionalmente azules para Hops.Cobre
+R: VICHO
+.- Además se debe puede seleccionar más de 1. (GES-CAEC)( LEY URGENCIA - OTRO) (IT - INTERCONSULTA)
+R:VICHO
+.- Aplicar lógica de SWITCH de recepción en ingreso.
+R: VICHO
+.- CAMBIAR SWITCH por CHECKBOX. LEY DE URGENCIA, SE DESEA DEJAR UNA MARCA.
+R:VICHO
+.- Sí marca Ley de urgencia puede seguir sin marcar ninguno sino debe seleccionar.
+R:VICHO
+.- SOLO CHUQUI SE LLAMA N° Y CENTRO DE COSTO (CARLA) -> PARA EL FINAL SI NO SE USAN.
+R: Desaparecen cuando no es chuqui
+.- AGREGAR ESTADO DE VIGENCIA,FECHAS DE INICIO,FECHA DE TERMINO
+R: NO SE MODIFICARA
+.- DIVISION, TIPO PLAN, AFILIADO CARGA (duda)
+R: NUEVOS CAMPOS, LUEGO
+.- ROL ( ROL A O ROL B U OTRO) -> DEJAR CAMPO ABIERTO -> MISMO SERVICIO DEBERÍA TRAERLO.
+R: RESUELTO
+.- DISPONIBILIDAD Y TURNO DEBEN SER NO OBLIGATORIO.
+R: Listo
+.- COMENTARIO;  DE DIRECCION QUE QUEDA MALO; DIRECCION BENEF ESTA MALA BASE
+R:LISTO
+.- REVISAR CIUDAD YA QUE ES MISMA QUE COMUNA EN EL EJEMPLO PRESENTADO. DEJAR LA MISMA (CIUDAD Y COMUNA)
+R: LISTO
+.- LOS MEDICOS SE DEBEN FILTRAR POR PRESTADOR -> RELACIONADO AL STAFF
+R: Listo
+.- CAMBIAR LABEL -> MEDICO SOLICITANTE
+R: Listo
+.- SEPARAR COMORBILIDADES DE LA SECCIÓN DE MEDICO. -> POSIBLE CAMBIO A UNA LISTADO PARA ANALISIS (NO MVP)
+R: Listo
+.- Dialisis, Requerimiento oxigeno, Tutores(brazos o piernas debe ocupar + asientos) en indiciaciones especiales 
+R: Listo
+.- Traslado Especial -> Agregar Avión Comercial como opción.
+R: Listo
+.- Alertar "Cuenta con Licencia Médica" (GESTOR)
+R:LISTO
+
+.- Estado de Diag -> Se debe eliminar opción "Sin Diagnóstico"
+R:Listo
+.- Descripción de Diagnótico -> Cambiar Placeholder por "hombro izquierdo , bilateral, etc"
+R:Listo
+.- Cambiar "motivo de la IC" -> "Motivo del requerimiento"
+R:Listo
+.- "Requerimiento de la IC" -> "Descripción del requirimiento"
+R:Listo
+.- Prestaciones -> Revisar Listado en QA Y PROD SINO DEJAR COD FONASAS
+R: QA SIN INFORMACION
+.- Descripción requerimineto N° -> lateralidad como placeholder
+R: Listo
+.- Tipo de Documento -> Eliminar indicación Médica y escrito mal ley de urgencia.
+R: Listo
+.- REVISAR MÑN UN CASO CON 3 DIAGNOSTICO EN UN MISMO CASO. CON RUT QUE TENGA OTRO CASO.
+R:REUNION
+.- DIFERENCIA EN CON "LIBRE ELECCION"
+R:LISTO
