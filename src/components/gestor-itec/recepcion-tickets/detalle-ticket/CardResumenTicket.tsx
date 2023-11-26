@@ -312,8 +312,6 @@ export const ResumenTicket = ({ infoTicket }: Props) => {
           </DialogContent>
           <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
             {ticket?.EstadoId != 3 ? (
-          {(rolUsuario == 'admin' && ticket?.EstadoId != 3) || (rolUsuario == 'trabajador' && ticket?.EstadoId != 3) ? (
-            <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
               <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} />
             ) : null}
             {rolUsuario == 'admin' || rolUsuario == 'trabajador' ? (
