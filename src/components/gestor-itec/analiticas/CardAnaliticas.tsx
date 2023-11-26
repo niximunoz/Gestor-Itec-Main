@@ -45,6 +45,14 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
           IdConsulta: encryptText(rut)
         }
       )
+
+      const { data: ListadoTicketsFullRutUser } = await instanceMiddlewareApi.post(
+        `/Parametros/ObtenerCountTicketsGeneralByRutUsuario`,
+        {
+          IdConsulta: encryptText(rut)
+        }
+      )
+
       setCantidadTicketsAsigAbiertos(ListadoTicketsAsignadosPorEstado.Data.CantidadAbiertos ?? 0)
       setCantidadTicketsAsigCerrados(ListadoTicketsAsignadosPorEstado.Data.CantidadCerrados ?? 0)
       setCantidadTicketsAsigEnProceso(ListadoTicketsAsignadosPorEstado.Data.CantidadEnProceso ?? 0)

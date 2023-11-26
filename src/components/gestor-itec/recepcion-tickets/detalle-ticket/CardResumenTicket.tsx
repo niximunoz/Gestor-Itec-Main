@@ -164,6 +164,11 @@ export const ResumenTicket = ({ infoTicket }: Props) => {
     }
   }
 
+  const handleVerDescargar = (rutaArchivo: any) => {
+    const url = `https://localhost:202\\${rutaArchivo}`
+    window.open(url, '_blank')
+  }
+
   useEffect(() => {
     if (infoTicket && infoTicket != null) {
       cargarDatos()
@@ -173,153 +178,154 @@ export const ResumenTicket = ({ infoTicket }: Props) => {
   return cargando ? (
     <UserSpinner />
   ) : (
-    <>
-      <Card sx={{ mb: 5, position: 'relative' }}>
-        <CardHeader
-          sx={{ display: 'flex', alignItems: 'center', paddingLeft: '45px' }}
-          title={`Detalle Ticket N° ${ticket?.TickId}`}
-          subheader={
-            <>
-              <CustomChip label={categoriaTicket?.CatNombre} color={'info'} sx={{ marginRight: '8px' }} />
-              <CustomChip
-                label={estadoTicket?.EstadoNombre}
-                skin='light'
-                color={getColor(estadoTicket?.EstadoNombre)}
-              />
-            </>
-          }
-        />
-        <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
-          <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 5 }, pt: { xs: 8, sm: 1.5 }, position: 'relative' }}>
-            {cargando ? (
-              <UserSpinner />
-            ) : (
-              <Grid container spacing={5}>
-                <Grid item xs={12} sm={8}>
-                  <Controller
-                    name='Titulo'
-                    control={controlTicket}
-                    defaultValue={''}
-                    render={({ field: { value, onChange } }) => (
-                      <TextField
-                        fullWidth
-                        label='Título'
-                        onChange={onChange}
-                        value={value}
-                        error={Boolean(errorsTicket.Titulo)}
-                        id='filled-multiline-flexible'
-                        multiline
-                        InputProps={{
-                          readOnly: true
-                        }}
-                      />
-                    )}
-                  />
-                  {errorsTicket.Titulo && (
-                    <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Titulo.message}</FormHelperText>
+    <Card sx={{ mb: 5, position: 'relative' }}>
+      <CardHeader
+        sx={{ display: 'flex', alignItems: 'center', paddingLeft: '45px' }}
+        title={`Detalle Ticket N° ${ticket?.TickId}`}
+        subheader={
+          <>
+            <CustomChip label={categoriaTicket?.CatNombre} color={'info'} sx={{ marginRight: '8px' }} />
+            <CustomChip label={estadoTicket?.EstadoNombre} skin='light' color={getColor(estadoTicket?.EstadoNombre)} />
+          </>
+        }
+      />
+      <CardContent sx={{ pt: theme => `${theme.spacing(2.5)} !important` }}>
+        <DialogContent sx={{ pb: 6, px: { xs: 8, sm: 5 }, pt: { xs: 8, sm: 1.5 }, position: 'relative' }}>
+          {cargando ? (
+            <UserSpinner />
+          ) : (
+            <Grid container spacing={5}>
+              <Grid item xs={12} sm={8}>
+                <Controller
+                  name='Titulo'
+                  control={controlTicket}
+                  defaultValue={''}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      fullWidth
+                      label='Título'
+                      onChange={onChange}
+                      value={value}
+                      error={Boolean(errorsTicket.Titulo)}
+                      id='filled-multiline-flexible'
+                      multiline
+                      InputProps={{
+                        readOnly: true
+                      }}
+                    />
                   )}
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
-                  <Controller
-                    name='UserAsignado'
-                    control={controlTicket}
-                    render={({ field: { onChange } }) => (
-                      <Autocomplete
-                        filterSelectedOptions
-                        value={userAsignadoTicket}
-                        id='tags-standard'
-                        options={dataUsuarios}
-                        getOptionLabel={option => `${option.UsuNombre ?? ''} ${option.UsuApellido ?? ''}` ?? ''}
-                        onChange={(e, data) => {
-                          onChange(data)
-                          handleChangeUserCreaTicket(data)
-                        }}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            error={Boolean(errorsTicket.UserAsignado)}
-                            fullWidth
-                            label='Responsable'
-                            variant='outlined'
-                          />
-                        )}
-                        renderOption={(props, option) => {
-                          return (
-                            <li {...props} key={option.UsuId}>
-                              {option.UsuNombre} {option.UsuApellido}
-                            </li>
-                          )
-                        }}
-                        disabled
-                      />
-                    )}
-                  />
-                  {errorsTicket.UserAsignado && (
-                    <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.UserAsignado.message}</FormHelperText>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} sm={12}>
-                  <Controller
-                    name='Descripción'
-                    control={controlTicket}
-                    defaultValue={''}
-                    render={({ field: { value, onChange } }) => (
-                      <TextField
-                        fullWidth
-                        multiline
-                        rows={6}
-                        label='Descripción'
-                        onChange={onChange}
-                        value={value}
-                        error={Boolean(errorsTicket.Descripción)}
-                        id='textarea-outlined-static'
-                        InputProps={{
-                          readOnly: true
-                        }}
-                      />
-                    )}
-                  />
-                  {errorsTicket.Descripción && (
-                    <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Descripción.message}</FormHelperText>
-                  )}
-                </Grid>
-
-                <Grid container spacing={2} style={{ marginTop: '32px' }}>
-                  {listadoDocumentosTicket.map(doc => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={doc.InfoDocumento.DocumentoNombreModificado}>
-                      <Card sx={{height: 150}}>
-                        <CardContent>
-                          {/* Contenido de la tarjeta, como el nombre del archivo y un icono */}
-                          <Typography variant="body1">{doc.InfoDocumento.DocumentoNombreModificado}</Typography>
-                        </CardContent>
-                        <CardActions>
-                          <Button size="small" color="primary" href={doc.InfoDocumento.RutaArchivoAlmacenado} target="_blank">
-                            Ver / Descargar
-                          </Button>
-                        </CardActions>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-
-                <Grid item xs={12} sm={12}>
-                  <TimeLineDetalleTicket detalleTicket={listadoDetallesTicket} listaDatosUsuarios={dataUsuarios} />
-                </Grid>
+                />
+                {errorsTicket.Titulo && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Titulo.message}</FormHelperText>
+                )}
               </Grid>
-            )}
-          </DialogContent>
-          <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
-            {ticket?.EstadoId != 3 ? (
-              <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} />
-            ) : null}
-            {rolUsuario == 'admin' || rolUsuario == 'trabajador' ? (
-              <ModalCerrarTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} infoTicket={infoTicket} />
-            ) : null}
-          </DialogActions>
-        </CardContent>
-      </Card>
-    </>
+
+              <Grid item xs={12} sm={4}>
+                <Controller
+                  name='UserAsignado'
+                  control={controlTicket}
+                  render={({ field: { onChange } }) => (
+                    <Autocomplete
+                      filterSelectedOptions
+                      value={userAsignadoTicket}
+                      id='tags-standard'
+                      options={dataUsuarios}
+                      getOptionLabel={option => `${option.UsuNombre ?? ''} ${option.UsuApellido ?? ''}` ?? ''}
+                      onChange={(e, data) => {
+                        onChange(data)
+                        handleChangeUserCreaTicket(data)
+                      }}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={Boolean(errorsTicket.UserAsignado)}
+                          fullWidth
+                          label='Responsable'
+                          variant='outlined'
+                        />
+                      )}
+                      renderOption={(props, option) => {
+                        return (
+                          <li {...props} key={option.UsuId}>
+                            {option.UsuNombre} {option.UsuApellido}
+                          </li>
+                        )
+                      }}
+                      disabled
+                    />
+                  )}
+                />
+                {errorsTicket.UserAsignado && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.UserAsignado.message}</FormHelperText>
+                )}
+              </Grid>
+
+              <Grid item xs={12} sm={12}>
+                <Controller
+                  name='Descripción'
+                  control={controlTicket}
+                  defaultValue={''}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={6}
+                      label='Descripción'
+                      onChange={onChange}
+                      value={value}
+                      error={Boolean(errorsTicket.Descripción)}
+                      id='textarea-outlined-static'
+                      InputProps={{
+                        readOnly: true
+                      }}
+                    />
+                  )}
+                />
+                {errorsTicket.Descripción && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Descripción.message}</FormHelperText>
+                )}
+              </Grid>
+
+              <Grid container spacing={2} style={{ marginTop: '32px' }}>
+                {listadoDocumentosTicket.map(doc => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={doc.InfoDocumento.DocumentoNombreModificado}>
+                    <Card sx={{ height: 150 }}>
+                      <CardContent>
+                        <Typography variant='body1'>{doc.InfoDocumento.DocumentoNombreModificado}</Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button
+                          size='small'
+                          color='primary'
+                          onClick={() => handleVerDescargar(doc.InfoDocumento.RutaArchivoAlmacenado)}
+                        >
+                          Ver / Descargar
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+
+              <Grid item xs={12} sm={12}>
+                <TimeLineDetalleTicket detalleTicket={listadoDetallesTicket} listaDatosUsuarios={dataUsuarios} />
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'space-between' }}>
+          {ticket?.EstadoId != 3 ? (
+            <ModalAgregarDetalleTicket idTicketAbierto={ticket?.TickId ?? null} recargar={cargarDetalleTicket} />
+          ) : null}
+          {rolUsuario == 'admin' || rolUsuario == 'trabajador' ? (
+            <ModalCerrarTicket
+              idTicketAbierto={ticket?.TickId ?? null}
+              recargar={cargarDetalleTicket}
+              infoTicket={infoTicket}
+            />
+          ) : null}
+        </DialogActions>
+      </CardContent>
+    </Card>
   )
 }

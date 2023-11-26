@@ -242,11 +242,6 @@ export const ModalAgregarTicket = ({
     setValueTicket('Categoria', data?.CatId )
   }
 
-  const handleChangeEstadoTicket = (data: any) => {
-    setEstadoTicket(data)
-    setValueTicket('IdEstado', data?.CatId)
-  }
-
   const handleChangeUserCreaTicket = (data: any) => {
     setUserAsignadoTicket(data)
     setValueTicket('RutUsuarioAsignado', data?.UsuRut)
