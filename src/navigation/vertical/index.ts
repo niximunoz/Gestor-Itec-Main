@@ -168,7 +168,7 @@ const MenuReportes = () => {
           switch (area) {
             case 1:
               name = 'Tickets'
-              url = '/gestor-itec/reportes'
+              url = '/gestor-itec/analiticas'
 
               break
 
