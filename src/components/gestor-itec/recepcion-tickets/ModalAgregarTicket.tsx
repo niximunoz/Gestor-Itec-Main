@@ -149,17 +149,17 @@ export const ModalAgregarTicket = ({
 
   const handleChangeCategoriaTicket = (data: any) => {
     setCategoriaTicket(data)
-    setValueTicket('Categoria', data.CatId)
+    setValueTicket('Categoria', data?.CatId )
   }
 
   const handleChangeEstadoTicket = (data: any) => {
     setEstadoTicket(data)
-    setValueTicket('IdEstado', data.CatId)
+    setValueTicket('IdEstado', data?.CatId)
   }
 
   const handleChangeUserCreaTicket = (data: any) => {
     setUserAsignadoTicket(data)
-    setValueTicket('RutUsuarioAsignado', data.UsuRut)
+    setValueTicket('RutUsuarioAsignado', data?.UsuRut)
   }
 
   const onErrors: any = (errors: any, e: any) => console.log(errors, e)
