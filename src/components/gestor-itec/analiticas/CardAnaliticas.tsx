@@ -25,27 +25,9 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
   const [listadoTicketsAsigCerrados, setListadoTicketsAsigCerrados] = useState<ITblTicket[]>([])
   const [listadoTicketsAsigEnProceso, setLstadoTicketsAsigEnProceso] = useState<ITblTicket[]>([])
 
-  const cargarGraficas = async (rut: string) => {
+  const cargarGraficas = async (rut: string, rol : string | null) => {
     try {
       setCargando(true)
-      const { data: ticketsCreados } = await instanceMiddlewareApi.post(`/Parametros/ObtenerCountAllTicketsUser`, {
-        IdConsulta: encryptText(rut)
-      })
-
-      const { data: ticketsAsignados } = await instanceMiddlewareApi.post(
-        `/Parametros/ObtenerCountAsignadosTicketsUser`,
-        {
-          IdConsulta: encryptText(rut)
-        }
-      )
-  
-      const { data: ListadoTicketsAsignadosPorEstado } = await instanceMiddlewareApi.post(
-        `/Parametros/ObtenerCountTicketsPorEstadoUser`,
-        {
-          IdConsulta: encryptText(rut)
-        }
-      )
-
       const { data: ListadoTicketsFullRutUser } = await instanceMiddlewareApi.post(
         `/Parametros/ObtenerCountTicketsGeneralByRutUsuario`,
         {
@@ -53,21 +35,25 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
         }
       )
 
-      setCantidadTicketsAsigAbiertos(ListadoTicketsAsignadosPorEstado.Data.CantidadAbiertos ?? 0)
-      setCantidadTicketsAsigCerrados(ListadoTicketsAsignadosPorEstado.Data.CantidadCerrados ?? 0)
-      setCantidadTicketsAsigEnProceso(ListadoTicketsAsignadosPorEstado.Data.CantidadEnProceso ?? 0)
-      setListadoTicketsAsigAbiertos(ListadoTicketsAsignadosPorEstado.Data.ListadoTicketsAbiertos ?? [])
-      setListadoTicketsAsigCerrados(ListadoTicketsAsignadosPorEstado.Data.ListadoTicketsCerrados ?? [])
-      setLstadoTicketsAsigEnProceso(ListadoTicketsAsignadosPorEstado.Data.ListadoTicketsEnProceso ?? [])
+      setCantidadTicketsAsigAbiertos(ListadoTicketsFullRutUser.Data.CantidadAbiertos ?? 0)
+      setCantidadTicketsAsigCerrados(ListadoTicketsFullRutUser.Data.CantidadCerrados ?? 0)
+      setCantidadTicketsAsigEnProceso(ListadoTicketsFullRutUser.Data.CantidadEnProceso ?? 0)
+      setListadoTicketsAsigAbiertos(ListadoTicketsFullRutUser.Data.ListadoTicketsAbiertos ?? [])
+      setListadoTicketsAsigCerrados(ListadoTicketsFullRutUser.Data.ListadoTicketsCerrados ?? [])
+      setLstadoTicketsAsigEnProceso(ListadoTicketsFullRutUser.Data.ListadoTicketsEnProceso ?? [])
 
-      if (ticketsCreados.Information.StatusCode == 200) {
-        setCantidadCreadas(ticketsCreados.Data.Cantidad ?? 0)
-        setListadoTicketsCreados(ticketsCreados.Data.ListadoTickets ?? [])
+      if (rol == 'trabajador') {
+        setCantidadCreadas(ListadoTicketsFullRutUser.Data.CantidadTicketCreadosTrabajador ?? 0)
+        setListadoTicketsCreados(ListadoTicketsFullRutUser.Data.ListadoTicketsCreadosTrabajador ?? [])
+        setCantidadAsignadas(ListadoTicketsFullRutUser.Data.CantidadTicketAsignadosTrabajador ?? 0)
+        setListadoTicketsAsignados(ListadoTicketsFullRutUser.Data.ListadoTicketsAsignadosTrabajador ?? [])
       }
 
-      if (ticketsAsignados.Information.StatusCode == 200) {
-        setCantidadAsignadas(ticketsAsignados.Data.Cantidad ?? 0)
-        setListadoTicketsAsignados(ticketsAsignados.Data.ListadoTickets ?? [])
+      if (rol == 'cliente') {
+        setCantidadCreadas(ListadoTicketsFullRutUser.Data.CantidadTicketCreadoCliente ?? 0)
+        setListadoTicketsCreados(ListadoTicketsFullRutUser.Data.ListadoTicketsCreadosCliente ?? [])
+        setCantidadAsignadas(ListadoTicketsFullRutUser.Data.CantidadTicketAsignadosCliente ?? 0)
+        setListadoTicketsAsignados(ListadoTicketsFullRutUser.Data.ListadoTicketsAsignadosCliente ?? [])
       }
     } catch (error) {
       console.error(error)
@@ -79,25 +65,7 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
   const handleChangeUsuario = async (event: SyntheticEvent, newValue: ITblUsuario | null) => {
     setSelectedUser(newValue ?? null)
     if (newValue != null) {
-      await cargarGraficas(newValue.UsuRut.toString())
-    }
-  }
-
-  const cargarDatosGenerales = async () => {
-    try{
-      setCargando(true)
-      setCantidadTicketsAsigAbiertos(dataCargaInicial.Data.CantidadAbiertos ?? 0)
-      setCantidadTicketsAsigCerrados(dataCargaInicial.Data.CantidadCerrados ?? 0)
-      setCantidadTicketsAsigEnProceso(dataCargaInicial.Data.CantidadEnProceso ?? 0)
-      setListadoTicketsAsigAbiertos(dataCargaInicial.Data.ListadoTicketsAbiertos ?? [])
-      setListadoTicketsAsigCerrados(dataCargaInicial.Data.ListadoTicketsCerrados ?? [])
-      setLstadoTicketsAsigEnProceso(dataCargaInicial.Data.ListadoTicketsEnProceso ?? [])
-
-    }catch(error){
-      console.error(error)
-      setCargando(false)
-    } finally{
-      setCargando(false)
+      await cargarGraficas(newValue.UsuRut.toString(), newValue.UsuRol)
     }
   }
 
@@ -108,6 +76,11 @@ export const CardAnaliticas = ({ listadoUsuarios,dataCargaInicial }: Props) => {
       setListadoTicketsAsigAbiertos(dataCargaInicial.Data.ListadoTicketsAbiertos ?? [])
       setListadoTicketsAsigCerrados(dataCargaInicial.Data.ListadoTicketsCerrados ?? [])
       setLstadoTicketsAsigEnProceso(dataCargaInicial.Data.ListadoTicketsEnProceso ?? [])
+
+      setCantidadCreadas(dataCargaInicial.Data.CantidadTicketNoAsignadosGeneral ?? 0)
+        setListadoTicketsCreados(dataCargaInicial.Data.ListadoTicketsNoAsignadosGeneral ?? [])
+        setCantidadAsignadas(dataCargaInicial.Data.CantidadTicketAsignadosGeneral ?? 0)
+        setListadoTicketsAsignados(dataCargaInicial.Data.ListadoTicketsAsignadosGeneral ?? [])
   }, [dataCargaInicial])
   
 
