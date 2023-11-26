@@ -272,7 +272,7 @@ export const CardTablaAllTickets = ({ listaDatosTickets, recargar }: Props) => {
             {rolUsuario == 'admin' && (
               <ModalAsignarResponsable idTicketSeleccionado={row.TickId} listaDatosTickets={listaDatosTickets} recargar={recargar} />
             )}
-            {rolUsuario == 'admin' && row.EstadoId != 3 || rolUsuario == 'trabajador' && row.EstadoId != 3 ? (
+            {rolUsuario == 'admin'  || rolUsuario == 'trabajador' ? (
               <ModalCerrarTicket idTicketAbierto={row.TickId} recargar={recargar} infoTicket={row} />
             ) : null}
 
