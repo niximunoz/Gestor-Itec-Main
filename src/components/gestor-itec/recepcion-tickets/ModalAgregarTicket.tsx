@@ -13,7 +13,8 @@ import {
   TextField,
   Typography,
   Autocomplete,
-  Tooltip
+  styled,
+  TypographyProps
 } from '@mui/material'
 import React, { forwardRef, ReactElement, Ref, useState } from 'react'
 import * as yup from 'yup'
@@ -23,7 +24,7 @@ import UserSpinner from 'src/layouts/components/UserSpinner'
 import Swal from 'sweetalert2'
 import { instanceMiddlewareApi } from 'src/axios'
 import { ITblCategorias, ITblEstados, ITblUsuario } from 'src/interfaces'
-
+import { useDropzone } from 'react-dropzone'
 
 
 
@@ -75,8 +76,8 @@ export const ModalAgregarTicket = ({
   const [cargando, setCargando] = useState(false)
   const [abrir, setAbrir] = useState<boolean>(false)
   const [categoriaTicket, setCategoriaTicket] = useState<ITblCategorias | null>(null)
-  const [estadoTicket, setEstadoTicket] = useState<ITblEstados | null>(null)
   const [userAsignadoTicket, setUserAsignadoTicket] = useState<ITblUsuario | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const { usuRol: rolUsuario } = JSON.parse(localStorage.getItem('userData')!)
 
   const abrirModal = () => {
@@ -88,7 +89,6 @@ export const ModalAgregarTicket = ({
     setAbrir(false)
     setCargando(false)
     setCategoriaTicket(null)
-    setEstadoTicket(null)
     setUserAsignadoTicket(null)
   }
 
@@ -147,14 +147,39 @@ export const ModalAgregarTicket = ({
     }
   }
 
+  const Img = styled('img')(({ theme }) => ({
+    [theme.breakpoints.up('md')]: {
+      marginRight: theme.spacing(10)
+    },
+    [theme.breakpoints.down('md')]: {
+      marginBottom: theme.spacing(4)
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 250
+    }
+  }))
+
+  const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
+    marginBottom: theme.spacing(5),
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: theme.spacing(4)
+    }
+  }))
+
+  const { getRootProps, getInputProps } = useDropzone({
+    multiple: false,
+    accept: {
+      'archive/*': ['.xlsx', '.pdf', '.docx']
+    },
+    onDrop: (acceptedFiles: File[]) => {
+      setFiles(acceptedFiles.map((file: File) => Object.assign(file)))
+    }
+  })
+
+
   const handleChangeCategoriaTicket = (data: any) => {
     setCategoriaTicket(data)
     setValueTicket('Categoria', data.CatId)
-  }
-
-  const handleChangeEstadoTicket = (data: any) => {
-    setEstadoTicket(data)
-    setValueTicket('IdEstado', data.CatId)
   }
 
   const handleChangeUserCreaTicket = (data: any) => {
@@ -299,11 +324,12 @@ export const ModalAgregarTicket = ({
                       )}
                     />
                     {errorsTicket.RutUsuarioAsignado && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.RutUsuarioAsignado.message}</FormHelperText>
+                      <FormHelperText sx={{ color: 'error.main' }}>
+                        {errorsTicket.RutUsuarioAsignado.message}
+                      </FormHelperText>
                     )}
                   </Grid>
                 )}
-
 
                 <Grid item xs={12} sm={12}>
                   <Controller
@@ -327,6 +353,45 @@ export const ModalAgregarTicket = ({
                   {errorsTicket.Descripción && (
                     <FormHelperText sx={{ color: 'error.main' }}>{errorsTicket.Descripción.message}</FormHelperText>
                   )}
+                </Grid>
+                <Grid item xs={12}>
+                <Box
+                    {...getRootProps({ className: 'dropzone' })}
+                    sx={
+                      files.length
+                        ? {
+                            height: 120,
+                            width: '100%',
+                            border: '5px dashed #DBDBDD',
+                            padding: '4px',
+                            display: 'flex',
+                            justifyContent: 'center'
+                          }
+                        : { border: '5px dashed #DBDBDD', padding: '4px' }
+                    }
+                  >
+                    <input {...getInputProps()} />
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: ['column', 'column', 'row'],
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Img width={200} alt='Upload img' src='/images/misc/upload.png' />
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textAlign: ['center', 'center', 'inherit']
+                      }}
+                    >
+                      <HeadingTypography variant='h6'>Ingreso de documentos</HeadingTypography>
+                      <Typography color='textSecondary'>Arrastra el archivo aquí o haz un click </Typography>
+                    </Box>
+                  </Box>
+                  </Box>
                 </Grid>
               </Grid>
             )}
